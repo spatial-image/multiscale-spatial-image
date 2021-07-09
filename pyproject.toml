@@ -18,4 +18,6 @@ requires = [
 [tool.flit.metadata.requires-extra]
 test = [
     "pytest",
+    "fsspec",
+    "ipfsspec",
 ]
