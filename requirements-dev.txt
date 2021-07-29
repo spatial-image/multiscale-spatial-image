@@ -1,3 +1,4 @@
 pytest
 fsspec
 ipfsspec
+zarr

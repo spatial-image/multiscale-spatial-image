@@ -1,13 +1,12 @@
 import pytest
 
-import fsspec
 from ipfsspec import IPFSFileSystem
 import xarray as xr
 
 from spatial_image_multiscale import Method, to_multiscale
 
 IPFS_FS = IPFSFileSystem()
-IPFS_CID = 'bafybeibkmjaucsb4kzkyyprxnwezidayz76kbybpujkhywsjak4esdqyai'
+IPFS_CID = 'bafybeihnakaxoeub7meqt3jftpok2bp5ddgmdt7tb4myc63gtkfwbvap5i'
 
 @pytest.fixture
 def input_images():
