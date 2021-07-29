@@ -1,5 +1,7 @@
 # spatial-image-multiscale
 
+[![Test](https://github.com/spatial-image/spatial-image-multiscale/actions/workflows/test.yml/badge.svg)](https://github.com/spatial-image/spatial-image-multiscale/actions/workflows/test.yml)
+
 Generate a multiscale [spatial-image].
 
 ## Development
