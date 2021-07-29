@@ -20,4 +20,5 @@ test = [
     "pytest",
     "fsspec",
     "ipfsspec",
+    "zarr",
 ]
