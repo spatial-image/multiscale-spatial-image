@@ -21,6 +21,15 @@ jobs:
         run: |
           python -m pip install --upgrade pip
           pip install -r requirements.txt -r requirements-dev.txt
+      - name: Setup ipfs
+        uses: ibnesayeed/setup-ipfs@master
+        with:
+          ipfs_version: ^0.9
+      - name: Pin ipfs testing data locally
+        shell: bash
+        run: |
+          cid=$(cat test_spatial_image_multiscale.py | awk '/IPFS_CID =/ {print $3 " "}')
+          ipfs pin add -- $cid
       - name: Test with pytest
         run: |
           pytest --junitxml=junit/test-results.xml
