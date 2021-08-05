@@ -4,19 +4,20 @@ Generate a multiscale spatial image."""
 
 __version__ = "0.0.2"
 
-from typing import Union, Sequence, List, Optional
+from typing import Union, Sequence, Mapping, Hashable, List, Optional
 from enum import Enum
 
 import xarray as xr
 import numpy as np
 
+_spatial_dims = {"x", "y", "z"}
+
 class Method(Enum):
     XARRAY_COARSEN = "xarray.coarsen"
 
 def to_multiscale(image: xr.DataArray,
-        scale_factors: Sequence[Union[Sequence[int], int]],
-        method: Optional[Method] = None,
-        ranges: bool = False) -> List[xr.DataArray]:
+        scale_factors: Sequence[Union[Mapping[Hashable, int], int]],
+        method: Optional[Method] = None) -> List[xr.DataArray]:
     """Generate a multiscale representation of a spatial image.
 
     Parameters
@@ -31,10 +32,6 @@ def to_multiscale(image: xr.DataArray,
     method : spatial_image_multiscale.Method, optional
         Method to reduce the input image.
 
-    ranges : bool
-        Compute ranges of every image component, output on the 'ranges' attr.
-
-
     Returns
     -------
 
@@ -45,5 +42,11 @@ def to_multiscale(image: xr.DataArray,
     """
 
     result = [image]
+    current_input = image
+    for scale_factor in scale_factors:
+        dim = { dim: scale_factor for dim in _spatial_dims.intersection(image.dims) }
+        downscaled = current_input.coarsen(dim=dim, boundary='trim', side="right").mean()
+        result.append(downscaled)
+        current_input = downscaled
 
     return result
