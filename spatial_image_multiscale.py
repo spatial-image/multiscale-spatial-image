@@ -12,12 +12,16 @@ import numpy as np
 
 _spatial_dims = {"x", "y", "z"}
 
+
 class Method(Enum):
     XARRAY_COARSEN = "xarray.coarsen"
 
-def to_multiscale(image: xr.DataArray,
-        scale_factors: Sequence[Union[Mapping[Hashable, int], int]],
-        method: Optional[Method] = None) -> List[xr.DataArray]:
+
+def to_multiscale(
+    image: xr.DataArray,
+    scale_factors: Sequence[Union[Mapping[Hashable, int], int]],
+    method: Optional[Method] = None,
+) -> List[xr.DataArray]:
     """Generate a multiscale representation of a spatial image.
 
     Parameters
@@ -45,10 +49,12 @@ def to_multiscale(image: xr.DataArray,
     current_input = image
     for scale_factor in scale_factors:
         if isinstance(scale_factor, int):
-            dim = { dim: scale_factor for dim in _spatial_dims.intersection(image.dims) }
+            dim = {dim: scale_factor for dim in _spatial_dims.intersection(image.dims)}
         else:
             dim = scale_factor
-        downscaled = current_input.coarsen(dim=dim, boundary='trim', side="right").mean()
+        downscaled = current_input.coarsen(
+            dim=dim, boundary="trim", side="right"
+        ).mean()
         result.append(downscaled)
         current_input = downscaled
 
