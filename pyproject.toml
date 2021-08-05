@@ -22,3 +22,6 @@ test = [
     "ipfsspec",
     "zarr",
 ]
+
+[tool.black]
+line-length = 88
