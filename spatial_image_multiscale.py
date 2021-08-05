@@ -44,7 +44,10 @@ def to_multiscale(image: xr.DataArray,
     result = [image]
     current_input = image
     for scale_factor in scale_factors:
-        dim = { dim: scale_factor for dim in _spatial_dims.intersection(image.dims) }
+        if isinstance(scale_factor, int):
+            dim = { dim: scale_factor for dim in _spatial_dims.intersection(image.dims) }
+        else:
+            dim = scale_factor
         downscaled = current_input.coarsen(dim=dim, boundary='trim', side="right").mean()
         result.append(downscaled)
         current_input = downscaled
