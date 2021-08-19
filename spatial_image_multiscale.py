@@ -2,15 +2,20 @@
 
 Generate a multiscale spatial image."""
 
-__version__ = "0.1.0"
+__version__ = "0.2.0"
 
-from typing import Union, Sequence, Mapping, Hashable, List, Optional
+from typing import Union, Sequence, List, Optional, Dict
 from enum import Enum
+
+from spatial_image import SpatialImage # type: ignore
 
 import xarray as xr
 import numpy as np
 
 _spatial_dims = {"x", "y", "z"}
+
+# Type alias
+MultiscaleSpatialImage = List[SpatialImage]
 
 
 class Method(Enum):
@@ -18,16 +23,16 @@ class Method(Enum):
 
 
 def to_multiscale(
-    image: xr.DataArray,
-    scale_factors: Sequence[Union[Mapping[Hashable, int], int]],
+    image: SpatialImage,
+    scale_factors: Sequence[Union[Dict[str, int], int]],
     method: Optional[Method] = None,
-) -> List[xr.DataArray]:
+) -> MultiscaleSpatialImage:
     """Generate a multiscale representation of a spatial image.
 
     Parameters
     ----------
 
-    image : xarray.DataArray
+    image : xarray.DataArray (SpatialImage)
         The spatial image from which we generate a multi-scale representation.
 
     scale_factors : int per scale or spatial dimension int's per scale
@@ -39,7 +44,7 @@ def to_multiscale(
     Returns
     -------
 
-    result : list of xr.DataArray's
+    result : list of xr.DataArray's (MultiscaleSpatialImage)
         Multiscale representation. The input image, is returned as in the first
         element. Subsequent elements are downsampled following the provided
         scale_factors.

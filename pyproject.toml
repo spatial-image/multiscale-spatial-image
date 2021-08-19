@@ -13,11 +13,13 @@ description-file = "README.md"
 requires = [
     "numpy",
     "xarray",
+    "spatial_image>=0.0.3",
 ]
 
 [tool.flit.metadata.requires-extra]
 test = [
     "pytest",
+    "pytest-mypy",
     "fsspec",
     "ipfsspec",
     "zarr",

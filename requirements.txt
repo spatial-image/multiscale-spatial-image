@@ -1,2 +1,3 @@
 numpy
 xarray
+spatial_image
