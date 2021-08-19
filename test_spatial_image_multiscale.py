@@ -1,6 +1,6 @@
 import pytest
 
-from ipfsspec import IPFSFileSystem
+from ipfsspec import IPFSFileSystem # type: ignore
 import xarray as xr
 
 from spatial_image_multiscale import Method, to_multiscale
