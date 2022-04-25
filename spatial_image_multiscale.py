@@ -20,28 +20,57 @@ _spatial_dims = {"x", "y", "z"}
 class MultiscaleSpatialImage(DataTree):
     """A multi-scale representation of a spatial image.
 
-    This is an xarray DataTree, where the root is named `ngff` by default (to signal content that is
+    This is an xarray DataTree, where the root is named `multiscales` by default (to signal content that is
     compatible with the Open Microscopy Environment Next Generation File Format (OME-NGFF)
     instead of the default generic DataTree `root`.
 
-    The tree contains nodes in the form: `ngff/{scale}` where *scale* is the integer scale.
+    The tree contains nodes in the form: `multiscales/{scale}` where *scale* is the integer scale.
     Each node has a the same named `Dataset` that corresponds to to the NGFF dataset name.
      For example, a three-scale representation of a *cells* dataset would have `Dataset` nodes:
 
-      ngff/0
-      ngff/1
-      ngff/2
+      multiscales/0
+      multiscales/1
+      multiscales/2
     """
 
     def __init__(
         self,
-        name: str = "ngff",
+        name: str = "multiscales",
         data: Union[xr.Dataset, xr.DataArray] = None,
         parent: TreeNode = None,
         children: List[TreeNode] = None,
     ):
-        """DataTree with a root name of *ngff*."""
+        """DataTree with a root name of *multiscales*."""
         super().__init__(name, data=data, parent=parent, children=children)
+
+    def to_zarr(
+        self,
+        store,
+        mode: str = "w",
+        encoding=None,
+        **kwargs
+    ):
+        """
+        Write spatialimage contents to a Zarr store.
+
+        store : MutableMapping, str or Path, optional
+            Store or path to directory in file system
+        mode : {{"w", "w-", "a", "r+", None}, default: "w"
+            Persistence mode: “w” means create (overwrite if exists); “w-” means create (fail if exists);
+            “a” means override existing variables (create if does not exist); “r+” means modify existing
+            array values only (raise an error if any metadata or shapes would change). The default mode
+            is “a” if append_dim is set. Otherwise, it is “r+” if region is set and w- otherwise.
+        encoding : dict, optional
+            Nested dictionary with variable names as keys and dictionaries of
+            variable specific encodings as values, e.g.,
+            ``{"multiscales/0/image": {"my_variable": {"dtype": "int16", "scale_factor": 0.1}, ...}, ...}``.
+            See ``xarray.Dataset.to_zarr`` for available options.
+        kwargs :
+            Additional keyword arguments to be passed to ``datatree.DataTree.to_zarr``
+        """
+
+
+        super().to_zarr(store, **kwargs)
 
 
 class Method(Enum):
@@ -75,7 +104,7 @@ def to_multiscale(
         named by the integer scale.  Increasing scales are downscaled versions of the input image.
     """
 
-    data_objects = {f"ngff/0": image.to_dataset(name=image.name)}
+    data_objects = {f"multiscales/0": image.to_dataset(name=image.name)}
 
     scale_transform = []
     translate_transform = []
@@ -113,7 +142,7 @@ def to_multiscale(
         downscaled = current_input.coarsen(
             dim=dim, boundary="trim", side="right"
         ).mean()
-        data_objects[f"ngff/{factor_index+1}"] = downscaled.to_dataset(name=image.name)
+        data_objects[f"multiscales/{factor_index+1}"] = downscaled.to_dataset(name=image.name)
 
         scale_transform = []
         translate_transform = []
@@ -148,7 +177,7 @@ def to_multiscale(
         current_input = downscaled
 
     multiscale = MultiscaleSpatialImage.from_dict(
-        name="ngff", data_objects=data_objects
+        name="multiscales", data_objects=data_objects
     )
 
     axes = []

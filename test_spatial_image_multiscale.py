@@ -40,6 +40,8 @@ def test_base_scale(input_images):
     image = input_images["cthead1"]
 
     multiscale = to_multiscale(image, [])
+    # import pdb; pdb.set_trace()
+    multiscale.to_zarr('/tmp/cthead.zarr')
     # xr.testing.assert_equal(image, multiscale[0])
 
     image = input_images["small_head"]
