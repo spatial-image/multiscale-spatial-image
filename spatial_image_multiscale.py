@@ -4,7 +4,7 @@ Generate a multiscale spatial image."""
 
 __version__ = "0.3.0"
 
-from typing import Union, Sequence, List, Optional, Dict
+from typing import Union, Sequence, List, Optional, Dict, Mapping, Any
 from enum import Enum
 
 from spatial_image import SpatialImage  # type: ignore
@@ -135,13 +135,14 @@ class MultiscaleSpatialImage(DataTree):
 
 
 class Method(Enum):
-    XARRAY_COARSEN = "xarray.coarsen"
+    XARRAY_COARSEN = "xarray.DataArray.coarsen"
 
 
 def to_multiscale(
     image: SpatialImage,
     scale_factors: Sequence[Union[Dict[str, int], int]],
     method: Optional[Method] = None,
+    chunks: Optional[Union[int, tuple[int, ...], tuple[tuple[int, ...], ...], Mapping[Any, Union[None, int, tuple[int, ...]]]]] = None,
 ) -> MultiscaleSpatialImage:
     """Generate a multiscale representation of a spatial image.
 
@@ -157,6 +158,9 @@ def to_multiscale(
     method : spatial_image_multiscale.Method, optional
         Method to reduce the input image.
 
+    chunks : xarray Dask array chunking specification, optional
+        Specify the chunking used in each output scale.
+
     Returns
     -------
 
@@ -165,7 +169,17 @@ def to_multiscale(
         named by the integer scale.  Increasing scales are downscaled versions of the input image.
     """
 
-    data_objects = {f"multiscales/0": image.to_dataset(name=image.name)}
+    if chunks is None:
+        # IPFS and visualization friendly default chunks
+        if 'z' in image.dims:
+            chunks = 64
+        else:
+            chunks = 256
+        chunks = { d: chunks for d in image.dims }
+        if 't' in image.dims:
+            chunks['t'] = 1
+
+    data_objects = {f"multiscales/0": image.chunk(chunks).to_dataset(name=image.name)}
 
     current_input = image
     for factor_index, scale_factor in enumerate(scale_factors):
@@ -176,6 +190,7 @@ def to_multiscale(
         downscaled = current_input.coarsen(
             dim=dim, boundary="trim", side="right"
         ).mean()
+        downscaled = downscaled.chunk(chunks)
         data_objects[f"multiscales/{factor_index+1}"] = downscaled.to_dataset(name=image.name)
 
     multiscale = MultiscaleSpatialImage.from_dict(
