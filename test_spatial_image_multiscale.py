@@ -40,13 +40,13 @@ def test_base_scale(input_images):
     image = input_images["cthead1"]
 
     multiscale = to_multiscale(image, [])
-    # import pdb; pdb.set_trace()
-    multiscale.to_zarr('/tmp/cthead.zarr')
-    # xr.testing.assert_equal(image, multiscale[0])
+    print(image)
+    print(multiscale.children[0].ds)
+    xr.testing.assert_equal(image, multiscale.children[0].ds['cthead1'])
 
     image = input_images["small_head"]
     multiscale = to_multiscale(image, [])
-    # xr.testing.assert_equal(image, multiscale[0])
+    xr.testing.assert_equal(image, multiscale.children[0].ds['small_head'])
 
 
 def test_isotropic_scale_factors(input_images):

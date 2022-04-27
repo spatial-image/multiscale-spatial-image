@@ -51,7 +51,9 @@ class MultiscaleSpatialImage(DataTree):
         **kwargs
     ):
         """
-        Write spatialimage contents to a Zarr store.
+        Write multi-scale spatial image contents to a Zarr store.
+        
+        Metadata is added according the OME-NGFF standard.
 
         store : MutableMapping, str or Path, optional
             Store or path to directory in file system
@@ -69,6 +71,65 @@ class MultiscaleSpatialImage(DataTree):
             Additional keyword arguments to be passed to ``datatree.DataTree.to_zarr``
         """
 
+        multiscales = []
+        for name in self.children[0].ds.data_vars.keys():
+            ngff_datasets = []
+            for child in self.children:
+                image = child.ds
+                scale_transform = []
+                translate_transform = []
+                for dim in image.dims:
+                    if len(image.coords[dim]) > 1:
+                        scale_transform.append(float(image.coords[dim][1] - image.coords[dim][0]))
+                    else:
+                        scale_transform.append(1.0)
+                    if len(image.coords[dim]) > 0:
+                        translate_transform.append(float(image.coords[dim][0]))
+                    else:
+                        translate_transform.append(0.0)
+
+                ngff_datasets.append(
+                    {
+                        "path": f"{child.name}/{name}",
+                        "coordinateTransformations": [
+                            {
+                                "type": "scale",
+                                "scale": scale_transform,
+                            },
+                            {
+                                "type": "translation",
+                                "translation": translate_transform,
+                            },
+                        ],
+                    }
+                )
+
+            image = self.children[0].ds
+            axes = []
+            for axis in image.dims:
+                if axis == "t":
+                    axes.append({"name": "t", "type": "time"})
+                elif axis == "c":
+                    axes.append({"name": "c", "type": "channel"})
+                else:
+                    axes.append({"name": axis, "type": "space"})
+                if "units" in image.coords[axis].attrs:
+                    axes[-1]["unit"] = image.coords[axis].attrs["units"]
+
+            multiscales.append(
+                    {
+                        "version": "0.4",
+                        "name": name,
+                        "axes": axes,
+                        "datasets": ngff_datasets,
+                    }
+            )
+
+        # NGFF v0.4 metadata
+        ngff_metadata = {
+           "multiscales": multiscales
+        }
+        self.ds.attrs = ngff_metadata
 
         super().to_zarr(store, **kwargs)
 
@@ -106,33 +167,6 @@ def to_multiscale(
 
     data_objects = {f"multiscales/0": image.to_dataset(name=image.name)}
 
-    scale_transform = []
-    translate_transform = []
-    for dim in image.dims:
-        if len(image.coords[dim]) > 1:
-            scale_transform.append(float(image.coords[dim][1] - image.coords[dim][0]))
-        else:
-            scale_transform.append(1.0)
-        if len(image.coords[dim]) > 0:
-            translate_transform.append(float(image.coords[dim][0]))
-        else:
-            translate_transform.append(0.0)
-
-    ngff_datasets = [
-        {
-            "path": f"0/{image.name}",
-            "coordinateTransformations": [
-                {
-                    "type": "scale",
-                    "scale": scale_transform,
-                },
-                {
-                    "type": "translation",
-                    "translation": translate_transform,
-                },
-            ],
-        }
-    ]
     current_input = image
     for factor_index, scale_factor in enumerate(scale_factors):
         if isinstance(scale_factor, int):
@@ -144,64 +178,8 @@ def to_multiscale(
         ).mean()
         data_objects[f"multiscales/{factor_index+1}"] = downscaled.to_dataset(name=image.name)
 
-        scale_transform = []
-        translate_transform = []
-        for dim in image.dims:
-            if len(downscaled.coords[dim]) > 1:
-                scale_transform.append(
-                    float(downscaled.coords[dim][1] - downscaled.coords[dim][0])
-                )
-            else:
-                scale_transform.append(1.0)
-            if len(downscaled.coords[dim]) > 0:
-                translate_transform.append(float(downscaled.coords[dim][0]))
-            else:
-                translate_transform.append(0.0)
-
-        ngff_datasets.append(
-            {
-                "path": f"{factor_index+1}/{image.name}",
-                "coordinateTransformations": [
-                    {
-                        "type": "scale",
-                        "scale": scale_transform,
-                    },
-                    {
-                        "type": "translation",
-                        "translation": translate_transform,
-                    },
-                ],
-            }
-        )
-
-        current_input = downscaled
-
     multiscale = MultiscaleSpatialImage.from_dict(
         name="multiscales", data_objects=data_objects
     )
-
-    axes = []
-    for axis in image.dims:
-        if axis == "t":
-            axes.append({"name": "t", "type": "time"})
-        elif axis == "c":
-            axes.append({"name": "c", "type": "channel"})
-        else:
-            axes.append({"name": axis, "type": "space"})
-        if "units" in image.coords[axis].attrs:
-            axes[-1]["unit"] = image.coords[axis].attrs["units"]
-
-    # NGFF v0.4 metadata
-    ngff_metadata = {
-        "multiscales": [
-            {
-                "version": "0.4",
-                "name": image.name,
-                "axes": axes,
-                "datasets": ngff_datasets,
-            }
-        ]
-    }
-    multiscale.ds.attrs = ngff_metadata
 
     return multiscale
