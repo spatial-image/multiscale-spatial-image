@@ -32,7 +32,7 @@ jobs:
           ipfs get -o ./test/data -- $cid
       - name: Test with pytest
         run: |
-          pytest --mypy --junitxml=junit/test-results.xml
+          pytest --junitxml=junit/test-results.xml
       - name: Publish Test Report
         uses: mikepenz/action-junit-report@v2
         with:
