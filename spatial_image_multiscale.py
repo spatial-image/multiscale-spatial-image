@@ -5,7 +5,7 @@ Generate a multiscale spatial image."""
 __version__ = "0.3.0"
 
 import enum
-from typing import Union, Sequence, List, Optional, Dict, Mapping, Any
+from typing import Union, Sequence, List, Optional, Dict, Mapping, Any, Tuple
 from enum import Enum
 
 from spatial_image import to_spatial_image, SpatialImage  # type: ignore
@@ -143,9 +143,9 @@ def to_multiscale(
     chunks: Optional[
         Union[
             int,
-            tuple[int, ...],
-            tuple[tuple[int, ...], ...],
-            Mapping[Any, Union[None, int, tuple[int, ...]]],
+            Tuple[int, ...],
+            Tuple[Tuple[int, ...], ...],
+            Mapping[Any, Union[None, int, Tuple[int, ...]]],
         ]
     ] = None,
 ) -> MultiscaleSpatialImage:
