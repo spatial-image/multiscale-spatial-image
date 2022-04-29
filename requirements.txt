@@ -1,4 +1,0 @@
-numpy
-xarray
-xarray-datatree
-spatial_image

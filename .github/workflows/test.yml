@@ -9,7 +9,7 @@ jobs:
       max-parallel: 3
       matrix:
         os: [ubuntu-20.04, windows-2019, macos-10.15]
-        python-version: [3.7, 3.8, 3.9]
+        python-version: ['3.8', '3.9', '3.10']
 
     steps:
       - uses: actions/checkout@v2
@@ -20,19 +20,19 @@ jobs:
       - name: Install dependencies
         run: |
           python -m pip install --upgrade pip
-          pip install -r requirements.txt -r requirements-dev.txt
+          pip install -e '.[test]'
       - name: Setup ipfs
         uses: ibnesayeed/setup-ipfs@master
         with:
-          ipfs_version: ^0.9
+          ipfs_version: ^0.12
       - name: Pin ipfs testing data locally
         shell: bash
         run: |
-          cid=$(grep 'IPFS_CID =' test_spatial_image_multiscale.py | cut -d ' ' -f 3 | tr -d '"')
-          ipfs pin add -- $cid
+          cid=$(grep 'IPFS_CID =' test/test_spatial_image_multiscale.py | cut -d ' ' -f 3 | tr -d '"')
+          ipfs get -o ./test/data -- $cid
       - name: Test with pytest
         run: |
-          pytest --mypy --junitxml=junit/test-results.xml
+          pytest --junitxml=junit/test-results.xml
       - name: Publish Test Report
         uses: mikepenz/action-junit-report@v2
         with:
