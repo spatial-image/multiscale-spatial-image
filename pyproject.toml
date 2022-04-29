@@ -12,6 +12,7 @@ description-file = "README.md"
 
 requires = [
     "numpy",
+    "dask",
     "xarray",
     "xarray-datatree",
     "spatial_image>=0.1.0",

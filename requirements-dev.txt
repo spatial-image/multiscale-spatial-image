@@ -1,5 +1,0 @@
-pytest
-pytest-mypy
-fsspec
-ipfsspec
-zarr
