@@ -116,6 +116,7 @@ class MultiscaleSpatialImage(DataTree):
 
             multiscales.append(
                 {
+                    "@type": "ngff:Image",
                     "version": "0.4",
                     "name": name,
                     "axes": axes,
