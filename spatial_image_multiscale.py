@@ -2,7 +2,7 @@
 
 Generate a multiscale spatial image."""
 
-__version__ = "0.3.0"
+__version__ = "0.3.1"
 
 import enum
 from typing import Union, Sequence, List, Optional, Dict, Mapping, Any, Tuple
