@@ -21,6 +21,7 @@ requires = [
 [tool.flit.metadata.requires-extra]
 test = [
     "itk-filtering",
+    "jsonschema",
     "pytest",
     "pytest-mypy",
     "fsspec",
