@@ -193,7 +193,7 @@ def to_multiscale(
     # https://github.com/pydata/xarray/issues/5219
     if "chunks" in current_input.encoding:
         del current_input.encoding["chunks"]
-    data_objects = {f"multiscales/0": current_input.to_dataset(name=image.name)}
+    data_objects = {f"multiscales/scale0": current_input.to_dataset(name=image.name)}
 
     if method is None:
         method = Methods.XARRAY_COARSEN
@@ -235,7 +235,7 @@ def to_multiscale(
 
             downscaled = downscaled.chunk(out_chunks)
 
-            data_objects[f"multiscales/{factor_index+1}"] = downscaled.to_dataset(
+            data_objects[f"multiscales/scale{factor_index+1}"] = downscaled.to_dataset(
                 name=image.name
             )
             current_input = downscaled
@@ -310,7 +310,7 @@ def to_multiscale(
                 c_coords=image.coords.get("c", None),
             )
             downscaled = downscaled.chunk(out_chunks)
-            data_objects[f"multiscales/{factor_index+1}"] = downscaled.to_dataset(
+            data_objects[f"multiscales/scale{factor_index+1}"] = downscaled.to_dataset(
                 name=image.name
             )
             current_input = downscaled
