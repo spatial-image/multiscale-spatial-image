@@ -134,7 +134,6 @@ class MultiscaleSpatialImage(DataTree):
 class Methods(Enum):
     XARRAY_COARSEN = "xarray.DataArray.coarsen"
     ITK_BIN_SHRINK = "itk.bin_shrink_image_filter"
-    ITK_GAUSSIAN = "itk.discrete_gaussian_image_filter"
 
 
 def to_multiscale(
