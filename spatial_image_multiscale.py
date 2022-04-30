@@ -195,6 +195,9 @@ def to_multiscale(
         del current_input.encoding["chunks"]
     data_objects = {f"multiscales/0": current_input.to_dataset(name=image.name)}
 
+    if method is None:
+        method = Methods.XARRAY_COARSEN
+
     def dim_scale_factors(scale_factor):
         if isinstance(scale_factor, int):
             dim = {dim: scale_factor for dim in _spatial_dims.intersection(image.dims)}
