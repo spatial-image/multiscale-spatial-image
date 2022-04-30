@@ -116,6 +116,7 @@ class MultiscaleSpatialImage(DataTree):
 
             multiscales.append(
                 {
+                    "@type": "ngff:Image",
                     "version": "0.4",
                     "name": name,
                     "axes": axes,
@@ -193,6 +194,9 @@ def to_multiscale(
     if "chunks" in current_input.encoding:
         del current_input.encoding["chunks"]
     data_objects = {f"multiscales/0": current_input.to_dataset(name=image.name)}
+
+    if method is None:
+        method = Methods.XARRAY_COARSEN
 
     def dim_scale_factors(scale_factor):
         if isinstance(scale_factor, int):

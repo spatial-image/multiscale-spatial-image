@@ -10,7 +10,7 @@ from pathlib import Path
 from spatial_image_multiscale import Methods, to_multiscale
 
 IPFS_FS = IPFSFileSystem()
-IPFS_CID = "bafybeict5avtpfe5iyxmpny5qs4mfyuw3xqm6jyuhjzw4sjvydqf5c3w7q"
+IPFS_CID = "bafybeidqe2ea3hmi7aaqtuus2adzh3d3of5ym4qk46fzhrd3myggjvajyu"
 DATA_PATH = Path(__file__).absolute().parent / 'data'
 
 
@@ -27,6 +27,7 @@ def input_images():
     image_da = image_ds.cthead1
     result["cthead1"] = image_da
 
+    # store = IPFS_FS.get_mapper(f"ipfs://{IPFS_CID}/input/small_head.zarr")
     store = DirectoryStore(
         DATA_PATH / 'input' / 'small_head.zarr',
         dimension_separator='/'
@@ -101,6 +102,9 @@ def test_anisotropic_scale_factors(input_images):
     scale_factors = [{"x": 2, "y": 4}, {"x": 1, "y": 2}]
     multiscale = to_multiscale(image, scale_factors, method=Methods.XARRAY_COARSEN)
     verify_against_baseline(dataset_name, "x2y4_x1y2/XARRAY_COARSEN", multiscale)
+    # Test default method: Methods.XARRAY_COARSEN
+    multiscale = to_multiscale(image, scale_factors)
+    verify_against_baseline(dataset_name, "x2y4_x1y2/XARRAY_COARSEN", multiscale)
 
     dataset_name = "small_head"
     image = input_images[dataset_name]
@@ -109,7 +113,7 @@ def test_anisotropic_scale_factors(input_images):
         {"x": 2, "y": 2, "z": 2},
         {"x": 1, "y": 2, "z": 1},
     ]
-    multiscale = to_multiscale(image, scale_factors)
+    multiscale = to_multiscale(image, scale_factors, method=Methods.XARRAY_COARSEN)
     verify_against_baseline(
         dataset_name, "x3y2z4_x2y2z2_x1y2z1/XARRAY_COARSEN", multiscale
     )
@@ -127,13 +131,7 @@ def test_anisotropic_scale_factors(input_images):
         {"x": 2, "y": 2, "z": 2},
         {"x": 1, "y": 2, "z": 1},
     ]
-    multiscale = to_multiscale(image, scale_factors)
-    # print(multiscale)
-    # store = DirectoryStore(
-    #     f"/home/matt/data/spatial-image-multiscale/baseline/{dataset_name}/x3y2z4_x2y2z2_x1y2z1/ITK_BIN_SHRINK",
-    #     dimension_separator="/",
-    # )
-    # multiscale.to_zarr(store)
+    multiscale = to_multiscale(image, scale_factors, method=Methods.ITK_BIN_SHRINK)
     verify_against_baseline(
         dataset_name, "x3y2z4_x2y2z2_x1y2z1/ITK_BIN_SHRINK", multiscale
     )
