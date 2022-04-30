@@ -20,6 +20,8 @@ cid=$(grep 'IPFS_CID =' test/test_spatial_image_multiscale.py | cut -d ' ' -f 3 
 # Needs ipfs, e.g. https://docs.ipfs.io/install/ipfs-desktop/
 ipfs get -o ./test/data -- $cid
 pytest
+# Notebook tests
+pytest --nbmake --nbmake-timeout=3000 examples/*ipynb
 ```
 
 [spatial-image]: https://github.com/spatial-image/spatial-image
