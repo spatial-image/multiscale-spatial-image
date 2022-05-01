@@ -4,7 +4,10 @@
 [![image](https://img.shields.io/pypi/v/spatial_image_multiscale.svg)](https://pypi.python.org/pypi/spatial_image_multiscale/)
 [![image](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/python/black)
 
-Generate a multiscale [spatial-image].
+Generate a multiscale, chunked, multi-dimensional spatial image data structure serializable to [OME-NGFF].
+
+Each scale is a scientific Python [Xarray] [spatial-image] [Dataset], organized into nodes of an Xarray [Datatree].
+
 
 ## Development
 
@@ -26,3 +29,6 @@ pytest --nbmake --nbmake-timeout=3000 examples/*ipynb
 
 [spatial-image]: https://github.com/spatial-image/spatial-image
 [Xarray]: https://xarray.pydata.org/en/stable/
+[OME-NGFF]: https://ngff.openmicroscopy.org/
+[Dataset]: https://docs.xarray.dev/en/stable/generated/xarray.Dataset.html
+[Datatree]: https://xarray-datatree.readthedocs.io/en/latest/
