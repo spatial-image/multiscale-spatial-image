@@ -10,6 +10,13 @@ Generate a multiscale, chunked, multi-dimensional spatial image data structure s
 Each scale is a scientific Python [Xarray] [spatial-image] [Dataset], organized into nodes of an Xarray [Datatree].
 
 
+## Installation
+
+```sh
+pip install spatial_image_multiscale
+```
+
+
 ## Development
 
 Contributions are welcome and appreciated.
