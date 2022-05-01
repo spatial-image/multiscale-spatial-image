@@ -1,3 +1,5 @@
 dist/
 examples/.ipynb_checkpoints
 test/data
+examples/monkey_brain.nrrd
+examples/cthead1.zarr/
