@@ -81,7 +81,7 @@ DataTree('multiscales', parent=None)
         image    (y, x) uint8 dask.array<chunksize=(16, 16), meta=np.ndarray>
 ```
 
-Store as an Open Microscopy Environment-Next Generation File Format ([OME-NGFF]) [Zarr] store.
+Store as an Open Microscopy Environment-Next Generation File Format ([OME-NGFF]) / [netCDF] [Zarr] store.
 
 It is highly recommended to use `dimension_separator='/'` in the construction of the Zarr stores.
 
@@ -121,3 +121,4 @@ pytest --nbmake --nbmake-timeout=3000 examples/*ipynb
 [DataArray]: https://xarray.pydata.org/en/stable/generated/xarray.DataArray.html
 [Zarr]: https://zarr.readthedocs.io/en/stable/
 [Dask]: https://docs.dask.org/en/stable/array.html
+[netCDF]: https://www.unidata.ucar.edu/software/netcdf/
