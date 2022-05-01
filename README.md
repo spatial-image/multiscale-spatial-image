@@ -5,7 +5,7 @@
 [![image](https://img.shields.io/pypi/v/spatial_image_multiscale.svg)](https://pypi.python.org/pypi/spatial_image_multiscale/)
 [![image](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/python/black)
 
-Generate a multiscale, chunked, multi-dimensional spatial image data structure serializable to [OME-NGFF].
+Generate a multiscale, chunked, multi-dimensional spatial image data structure that can serialized to [OME-NGFF].
 
 Each scale is a scientific Python [Xarray] [spatial-image] [Dataset], organized into nodes of an Xarray [Datatree].
 
@@ -54,7 +54,7 @@ multiscale = to_multiscale(image, [2, 4])
 print(multiscale)
 ```
 
-An [Xarray] MultiscaleSpatialImage [Datatree].
+A chunked [Dask] Array MultiscaleSpatialImage [Xarray] [Datatree].
 
 ```
 DataTree('multiscales', parent=None)
@@ -90,6 +90,11 @@ store = zarr.storage.DirectoryStore('multiscale.zarr', dimension_separator='/')
 multiscale.to_zarr(store)
 ```
 
+
+## Examples
+
+- [![Binder](https://mybinder.org/badge_logo.svg)](https://mybinder.org/v2/gh/spatial-image/spatial-image-multiscale/main?urlpath=lab/tree/examples%2FHelloMultiscaleSpatialImageWorld.ipynb) [Hello MultiscaleSpatialImage World!](./examples/HelloMultiscaleSpatialImageWorld.ipynb) 
+
 ## Development
 
 Contributions are welcome and appreciated.
@@ -115,3 +120,4 @@ pytest --nbmake --nbmake-timeout=3000 examples/*ipynb
 [Datatree]: https://xarray-datatree.readthedocs.io/en/latest/
 [DataArray]: https://xarray.pydata.org/en/stable/generated/xarray.DataArray.html
 [Zarr]: https://zarr.readthedocs.io/en/stable/
+[Dask]: https://docs.dask.org/en/stable/array.html
