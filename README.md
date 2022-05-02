@@ -4,6 +4,7 @@
 [![Notebook tests](https://github.com/spatial-image/spatial-image-multiscale/actions/workflows/notebook-test.yml/badge.svg)](https://github.com/spatial-image/spatial-image-multiscale/actions/workflows/notebook-test.yml)
 [![image](https://img.shields.io/pypi/v/spatial_image_multiscale.svg)](https://pypi.python.org/pypi/spatial_image_multiscale/)
 [![image](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/python/black)
+[![DOI](https://zenodo.org/badge/379678181.svg)](https://zenodo.org/badge/latestdoi/379678181)
 
 Generate a multiscale, chunked, multi-dimensional spatial image data structure that can serialized to [OME-NGFF].
 
