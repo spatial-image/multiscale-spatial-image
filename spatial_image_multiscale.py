@@ -75,13 +75,13 @@ class MultiscaleSpatialImage(DataTree):
                 scale_transform = []
                 translate_transform = []
                 for dim in image.dims:
-                    if len(image.coords[dim]) > 1:
+                    if len(image.coords[dim]) > 1 and np.issubdtype(image.coords[dim].dtype, np.number):
                         scale_transform.append(
                             float(image.coords[dim][1] - image.coords[dim][0])
                         )
                     else:
                         scale_transform.append(1.0)
-                    if len(image.coords[dim]) > 0:
+                    if len(image.coords[dim]) > 0 and np.issubdtype(image.coords[dim].dtype, np.number):
                         translate_transform.append(float(image.coords[dim][0]))
                     else:
                         translate_transform.append(0.0)

@@ -95,7 +95,8 @@ multiscale.to_zarr(store)
 ## Examples
 
 - [![Binder](https://mybinder.org/badge_logo.svg)](https://mybinder.org/v2/gh/spatial-image/spatial-image-multiscale/main?urlpath=lab/tree/examples%2FHelloMultiscaleSpatialImageWorld.ipynb) [Hello MultiscaleSpatialImage World!](./examples/HelloMultiscaleSpatialImageWorld.ipynb) 
-- [![Binder](https://mybinder.org/badge_logo.svg)](https://mybinder.org/v2/gh/spatial-image/spatial-image-multiscale/main?urlpath=lab/tree/examples%2FITKConvertImage.ipynb) [Convert itk.Image](./examples/HelloMultiscaleSpatialImageWorld.ipynb) 
+- [![Binder](https://mybinder.org/badge_logo.svg)](https://mybinder.org/v2/gh/spatial-image/spatial-image-multiscale/main?urlpath=lab/tree/examples%2FITKConvertImage.ipynb) [Convert itk.Image](./examples/ConvertITKImage.ipynb) 
+- [![Binder](https://mybinder.org/badge_logo.svg)](https://mybinder.org/v2/gh/spatial-image/spatial-image-multiscale/main?urlpath=lab/tree/examples%2FITKConvertImage.ipynb) [Convert imageio ImageResource](./examples/ConvertImageioImageResource.ipynb) 
 
 ## Development
 
