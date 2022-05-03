@@ -15,12 +15,12 @@ requires = [
     "dask",
     "xarray",
     "xarray-datatree",
-    "spatial_image>=0.1.0",
+    "spatial_image>=0.2.1",
 ]
 
 [tool.flit.metadata.requires-extra]
 test = [
-    "itk-filtering",
+    "itk-filtering>=5.3rc4",
     "jsonschema",
     "pytest",
     "pytest-mypy",
