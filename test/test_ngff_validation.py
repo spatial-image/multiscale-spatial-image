@@ -18,11 +18,7 @@ def load_schema(version: str = "0.4", strict: bool = False) -> Dict:
     strict_str = ""
     if strict:
         strict_str = "strict_"
-    # Needs: https://github.com/ome/ngff/pull/113
-    # with urllib.request.urlopen(f"https://ngff.openmicroscopy.org/{version}/schemas/{strict_str}image.schema") as url:
-    with urllib.request.urlopen(
-        f"https://raw.githubusercontent.com/ome/ngff/main/{version}/schemas/{strict_str}image.schema"
-    ) as url:
+    with urllib.request.urlopen(f"https://ngff.openmicroscopy.org/{version}/schemas/{strict_str}image.schema") as url:
         schema = json.loads(url.read().decode())
     return schema
 
