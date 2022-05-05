@@ -8,6 +8,16 @@ jobs:
     name: Test notebooks with nbmake
     steps:
       - uses: actions/checkout@v2
+
+      - name: Setup ipfs
+        uses: ibnesayeed/setup-ipfs@master
+        with:
+          ipfs_version: ^0.12
+      - name: Cache ipfs testing data locally
+        shell: bash
+        run: |
+          cid=$(grep 'IPFS_CID =' test/test_spatial_image_multiscale.py | cut -d ' ' -f 3 | tr -d '"')
+          ipfs get -o ./test/data -- $cid
       - uses: actions/setup-python@v3
         with:
           python-version: '3.9'
