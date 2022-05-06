@@ -7,7 +7,7 @@ from zarr.storage import DirectoryStore
 from datatree import open_datatree
 from pathlib import Path
 
-from spatial_image_multiscale import Methods, to_multiscale
+from multiscale_spatial_image import Methods, to_multiscale
 
 IPFS_FS = IPFSFileSystem()
 IPFS_CID = "bafybeibb6pqmn7v7gqn2kyuciuch2yqk7rcrucmmnapmwottjdjxjr2zoi"

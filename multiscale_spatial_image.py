@@ -1,4 +1,4 @@
-"""spatial-image-multiscale
+"""multiscale-spatial-image
 
 Generate a multiscale spatial image."""
 
@@ -162,7 +162,7 @@ def to_multiscale(
         along individual spatial dimensions.
         Examples: [2, 2] or [{'x': 2, 'y': 4 }, {'x': 5, 'y': 10}]
 
-    method : spatial_image_multiscale.Methods, optional
+    method : multiscale_spatial_image.Methods, optional
         Method to reduce the input image.
 
     chunks : xarray Dask array chunking specification, optional
