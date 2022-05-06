@@ -8,7 +8,7 @@ from jsonschema.exceptions import ValidationError
 
 from jsonschema import validate, RefResolver
 
-from spatial_image_multiscale import to_multiscale, MultiscaleSpatialImage
+from multiscale_spatial_image import to_multiscale, MultiscaleSpatialImage
 from spatial_image import to_spatial_image
 import numpy as np
 import zarr

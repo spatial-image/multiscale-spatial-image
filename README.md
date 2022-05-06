@@ -1,8 +1,8 @@
-# spatial-image-multiscale
+# multiscale-spatial-image
 
-[![Test](https://github.com/spatial-image/spatial-image-multiscale/actions/workflows/test.yml/badge.svg)](https://github.com/spatial-image/spatial-image-multiscale/actions/workflows/test.yml)
-[![Notebook tests](https://github.com/spatial-image/spatial-image-multiscale/actions/workflows/notebook-test.yml/badge.svg)](https://github.com/spatial-image/spatial-image-multiscale/actions/workflows/notebook-test.yml)
-[![image](https://img.shields.io/pypi/v/spatial_image_multiscale.svg)](https://pypi.python.org/pypi/spatial_image_multiscale/)
+[![Test](https://github.com/spatial-image/multiscale-spatial-image/actions/workflows/test.yml/badge.svg)](https://github.com/spatial-image/multiscale-spatial-image/actions/workflows/test.yml)
+[![Notebook tests](https://github.com/spatial-image/multiscale-spatial-image/actions/workflows/notebook-test.yml/badge.svg)](https://github.com/spatial-image/multiscale-spatial-image/actions/workflows/notebook-test.yml)
+[![image](https://img.shields.io/pypi/v/multiscale_spatial_image.svg)](https://pypi.python.org/pypi/multiscale_spatial_image/)
 [![image](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/python/black)
 [![DOI](https://zenodo.org/badge/379678181.svg)](https://zenodo.org/badge/latestdoi/379678181)
 
@@ -14,7 +14,7 @@ Each scale is a scientific Python [Xarray] [spatial-image] [Dataset], organized 
 ## Installation
 
 ```sh
-pip install spatial_image_multiscale
+pip install multiscale_spatial_image
 ```
 
 ## Usage
@@ -22,7 +22,7 @@ pip install spatial_image_multiscale
 ```python
 import numpy as np
 from spatial_image import to_spatial_image
-from spatial_image_multiscale import to_multiscale
+from multiscale_spatial_image import to_multiscale
 import zarr
 
 # Image pixels
@@ -94,9 +94,9 @@ multiscale.to_zarr(store)
 
 ## Examples
 
-- [![Binder](https://mybinder.org/badge_logo.svg)](https://mybinder.org/v2/gh/spatial-image/spatial-image-multiscale/main?urlpath=lab/tree/examples%2FHelloMultiscaleSpatialImageWorld.ipynb) [Hello MultiscaleSpatialImage World!](./examples/HelloMultiscaleSpatialImageWorld.ipynb) 
-- [![Binder](https://mybinder.org/badge_logo.svg)](https://mybinder.org/v2/gh/spatial-image/spatial-image-multiscale/main?urlpath=lab/tree/examples%2FITKConvertImage.ipynb) [Convert itk.Image](./examples/ConvertITKImage.ipynb) 
-- [![Binder](https://mybinder.org/badge_logo.svg)](https://mybinder.org/v2/gh/spatial-image/spatial-image-multiscale/main?urlpath=lab/tree/examples%2FITKConvertImage.ipynb) [Convert imageio ImageResource](./examples/ConvertImageioImageResource.ipynb) 
+- [![Binder](https://mybinder.org/badge_logo.svg)](https://mybinder.org/v2/gh/spatial-image/multiscale-spatial-image/main?urlpath=lab/tree/examples%2FHelloMultiscaleSpatialImageWorld.ipynb) [Hello MultiscaleSpatialImage World!](./examples/HelloMultiscaleSpatialImageWorld.ipynb) 
+- [![Binder](https://mybinder.org/badge_logo.svg)](https://mybinder.org/v2/gh/spatial-image/multiscale-spatial-image/main?urlpath=lab/tree/examples%2FITKConvertImage.ipynb) [Convert itk.Image](./examples/ConvertITKImage.ipynb) 
+- [![Binder](https://mybinder.org/badge_logo.svg)](https://mybinder.org/v2/gh/spatial-image/multiscale-spatial-image/main?urlpath=lab/tree/examples%2FITKConvertImage.ipynb) [Convert imageio ImageResource](./examples/ConvertImageioImageResource.ipynb) 
 
 ## Development
 
@@ -105,10 +105,10 @@ Contributions are welcome and appreciated.
 To run the test suite:
 
 ```
-git clone https://github.com/spatial-image/spatial-image-multiscale
-cd spatial-image-multiscale
+git clone https://github.com/spatial-image/multiscale-spatial-image
+cd multiscale-spatial-image
 pip install -e ".[test]"
-cid=$(grep 'IPFS_CID =' test/test_spatial_image_multiscale.py | cut -d ' ' -f 3 | tr -d '"')
+cid=$(grep 'IPFS_CID =' test/test_multiscale_spatial_image.py | cut -d ' ' -f 3 | tr -d '"')
 # Needs ipfs, e.g. https://docs.ipfs.io/install/ipfs-desktop/
 ipfs get -o ./test/data -- $cid
 pytest

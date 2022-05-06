@@ -1,4 +1,4 @@
-"""spatial-image-multiscale
+"""multiscale-spatial-image
 
 Generate a multiscale spatial image."""
 
@@ -22,17 +22,16 @@ _spatial_dims = {"x", "y", "z"}
 class MultiscaleSpatialImage(DataTree):
     """A multi-scale representation of a spatial image.
 
-    This is an xarray DataTree, where the root is named `multiscales` by default (to signal content that is
-    compatible with the Open Microscopy Environment Next Generation File Format (OME-NGFF)
-    instead of the default generic DataTree `root`.
+    This is an xarray DataTree, with content compatible with the Open Microscopy Environment-
+    Next Generation File Format (OME-NGFF).
 
-    The tree contains nodes in the form: `multiscales/{scale}` where *scale* is the integer scale.
+    The tree contains nodes in the form: `scale{scale}` where *scale* is the integer scale.
     Each node has a the same named `Dataset` that corresponds to to the NGFF dataset name.
      For example, a three-scale representation of a *cells* dataset would have `Dataset` nodes:
 
-      multiscales/0
-      multiscales/1
-      multiscales/2
+      scale0
+      scale1
+      scale2
     """
 
     def __init__(
@@ -43,7 +42,7 @@ class MultiscaleSpatialImage(DataTree):
         children: List[TreeNode] = None,
     ):
         """DataTree with a root name of *multiscales*."""
-        super().__init__(name, data=data, parent=parent, children=children)
+        super().__init__(data=data, name=name, parent=parent, children=children)
 
     def to_zarr(self, store, mode: str = "w", encoding=None, **kwargs):
         """
@@ -61,17 +60,18 @@ class MultiscaleSpatialImage(DataTree):
         encoding : dict, optional
             Nested dictionary with variable names as keys and dictionaries of
             variable specific encodings as values, e.g.,
-            ``{"multiscales/0/image": {"my_variable": {"dtype": "int16", "scale_factor": 0.1}, ...}, ...}``.
+            ``{"scale0/image": {"my_variable": {"dtype": "int16", "scale_factor": 0.1}, ...}, ...}``.
             See ``xarray.Dataset.to_zarr`` for available options.
         kwargs :
             Additional keyword arguments to be passed to ``datatree.DataTree.to_zarr``
         """
 
         multiscales = []
-        for name in self.children[0].ds.data_vars.keys():
+        scale0 = self[self.groups[1]]
+        for name in scale0.ds.data_vars.keys():
             ngff_datasets = []
             for child in self.children:
-                image = child.ds
+                image = self[child].ds
                 scale_transform = []
                 translate_transform = []
                 for dim in image.dims:
@@ -88,7 +88,7 @@ class MultiscaleSpatialImage(DataTree):
 
                 ngff_datasets.append(
                     {
-                        "path": f"{child.name}/{name}",
+                        "path": f"{self[child].name}/{name}",
                         "coordinateTransformations": [
                             {
                                 "type": "scale",
@@ -102,7 +102,7 @@ class MultiscaleSpatialImage(DataTree):
                     }
                 )
 
-            image = self.children[0].ds
+            image = scale0.ds
             axes = []
             for axis in image.dims:
                 if axis == "t":
@@ -162,7 +162,7 @@ def to_multiscale(
         along individual spatial dimensions.
         Examples: [2, 2] or [{'x': 2, 'y': 4 }, {'x': 5, 'y': 10}]
 
-    method : spatial_image_multiscale.Methods, optional
+    method : multiscale_spatial_image.Methods, optional
         Method to reduce the input image.
 
     chunks : xarray Dask array chunking specification, optional
@@ -192,7 +192,7 @@ def to_multiscale(
     # https://github.com/pydata/xarray/issues/5219
     if "chunks" in current_input.encoding:
         del current_input.encoding["chunks"]
-    data_objects = {f"multiscales/scale0": current_input.to_dataset(name=image.name, promote_attrs=True)}
+    data_objects = {f"scale0": current_input.to_dataset(name=image.name, promote_attrs=True)}
 
     if method is None:
         method = Methods.XARRAY_COARSEN
@@ -234,7 +234,7 @@ def to_multiscale(
 
             downscaled = downscaled.chunk(out_chunks)
 
-            data_objects[f"multiscales/scale{factor_index+1}"] = downscaled.to_dataset(
+            data_objects[f"scale{factor_index+1}"] = downscaled.to_dataset(
                 name=image.name, promote_attrs=True
             )
             current_input = downscaled
@@ -309,13 +309,13 @@ def to_multiscale(
                 c_coords=image.coords.get("c", None),
             )
             downscaled = downscaled.chunk(out_chunks)
-            data_objects[f"multiscales/scale{factor_index+1}"] = downscaled.to_dataset(
+            data_objects[f"scale{factor_index+1}"] = downscaled.to_dataset(
                 name=image.name, promote_attrs=True
             )
             current_input = downscaled
 
     multiscale = MultiscaleSpatialImage.from_dict(
-        name="multiscales", data_objects=data_objects
+        d=data_objects
     )
 
     return multiscale

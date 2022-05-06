@@ -16,7 +16,7 @@ jobs:
       - name: Cache ipfs testing data locally
         shell: bash
         run: |
-          cid=$(grep 'IPFS_CID =' test/test_spatial_image_multiscale.py | cut -d ' ' -f 3 | tr -d '"')
+          cid=$(grep 'IPFS_CID =' test/test_multiscale_spatial_image.py | cut -d ' ' -f 3 | tr -d '"')
           ipfs get -o ./test/data -- $cid
       - uses: actions/setup-python@v3
         with:
