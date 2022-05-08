@@ -18,6 +18,8 @@ jobs:
         run: |
           cid=$(grep 'IPFS_CID =' test/test_multiscale_spatial_image.py | cut -d ' ' -f 3 | tr -d '"')
           ipfs get -o ./test/data -- $cid
+          cid=bafybeibpqky6d335duxtkmwowcc6igt2q5qorqd7e5xqfoxlfxm4pozg74
+          ipfs get -- $cid
       - uses: actions/setup-python@v3
         with:
           python-version: '3.9'
