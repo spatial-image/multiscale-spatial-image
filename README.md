@@ -117,6 +117,47 @@ pytest
 pytest --nbmake --nbmake-timeout=3000 examples/*ipynb
 ```
 
+To add new or update testing data, such as a new baseline for this block:
+
+```py
+dataset_name = "cthead1"
+image = input_images[dataset_name]
+baseline_name = "2_4/XARRAY_COARSEN"
+multiscale = to_multiscale(image, [2, 4], method=Methods.XARRAY_COARSEN)
+verify_against_baseline(dataset_name, baseline_name, multiscale)
+```
+
+Serialize the result:
+
+```py
+dataset_name = "cthead1"
+image = input_images[dataset_name]
+baseline_name = "2_4/XARRAY_COARSEN"
+multiscale = to_multiscale(image, [2, 4], method=Methods.XARRAY_COARSEN)
+
+store = DirectoryStore(
+    DATA_PATH / f"baseline/{dataset_name}/{baseline_name}", dimension_separator="/"
+)
+multiscale.to_zarr(store, mode="w")
+
+verify_against_baseline(dataset_name, baseline_name, multiscale)
+```
+
+Run the tests to generate the output.
+
+Once the new test data is present locally, upload the result to IPFS:
+
+```sh
+npm install -g @web3-storage/w3
+# Get an upload token from https://web3.storage
+w3 token
+w3 put ./test/data --no-wrap --name multiscale-spatial-image-topic-name --hidden
+```
+
+The update the resulting root CID in the [`IPFS_CID` variable](https://github.com/spatial-image/multiscale-spatial-image/blob/2d214d4d8a7eb475d76ddcd4c3d5e6932eecef56/test/test_multiscale_spatial_image.py#L13).
+
+
+
 [spatial-image]: https://github.com/spatial-image/spatial-image
 [Xarray]: https://xarray.pydata.org/en/stable/
 [OME-NGFF]: https://ngff.openmicroscopy.org/
