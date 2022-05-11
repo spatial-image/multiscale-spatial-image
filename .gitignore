@@ -5,3 +5,4 @@ examples/monkey_brain.nrrd
 examples/cthead1.zarr/
 examples/chelsea.zarr/
 .ipynb_checkpoints
+examples/sub-I46_ses-SPIM_sample-BrocaAreaS01_stain-GAD67_chunk-00_SPIM*
