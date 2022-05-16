@@ -10,7 +10,7 @@ from pathlib import Path
 from multiscale_spatial_image import Methods, to_multiscale
 
 IPFS_FS = IPFSFileSystem()
-IPFS_CID = "bafybeid435w23btguriqlpvjykbxlukc2rg5szzrpccki2etwjb4dqzmiu"
+IPFS_CID = "bafybeifcqiwu6qpj55v2vyhsdoaugsrt7d4kbbjrh7zrjplleddkqkqwty"
 DATA_PATH = Path(__file__).absolute().parent / "data"
 
 

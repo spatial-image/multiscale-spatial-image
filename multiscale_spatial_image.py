@@ -230,14 +230,79 @@ def to_multiscale(
         # For consistency for now, do not utilize direction until there is standardized support for
         # direction cosines / orientation in OME-NGFF
         block.attrs.pop("direction", None)
-        return block   
+        return block
+        
+    def compute_input_spacing(input_image):
+        '''Helper method to manually compute image spacing. Assumes even spacing along any axis.
+           
+        input_image: xarray.core.dataarray.DataArray
+            The image for which voxel spacings are computed
+
+        result: Dict
+            Spacing along each enumerated image axis
+            Example {'x': 1.0, 'y': 0.5}
+        '''
+        return {dim: float(input_image.coords[dim][1]) - float(input_image.coords[dim][0])
+                for dim in input_image.dims}
+
+    def compute_output_spacing(input_image, dim_factors):
+        '''Helper method to manually compute output image spacing.
+           
+        input_image: xarray.core.dataarray.DataArray
+            The image for which voxel spacings are computed
+
+        dim_factors: Dict
+            Shrink ratio along each enumerated axis
+
+        result: Dict
+            Spacing along each enumerated image axis
+            Example {'x': 2.0, 'y': 1.0}
+        '''
+        input_spacing = compute_input_spacing(input_image)
+        return {dim: input_spacing[dim] * dim_factors[dim] for dim in input_image.dims}
+
+    def compute_output_origin(input_image, dim_factors):    
+        '''Helper method to manually compute output image physical offset.
+           Note that this method does not account for an image direction matrix.
+           
+        input_image: xarray.core.dataarray.DataArray
+            The image for which voxel spacings are computed
+
+        dim_factors: Dict
+            Shrink ratio along each enumerated axis
+
+        result: Dict
+            Offset in physical space of first voxel in output image
+            Example {'x': 0.5, 'y': 1.0}
+        '''
+        import math
+        image_dims: Tuple[str, str, str, str] = ("x", "y", "z", "t")
+            
+        input_spacing = compute_input_spacing(input_image)
+        input_origin = {dim: float(input_image.coords[dim][0])
+                          for dim in image_dims if dim in dim_factors}
+
+        # Index in input image space corresponding to offset after shrink
+        input_index = {dim: 0.5 * (dim_factors[dim] - 1)
+                                  for dim in image_dims if dim in dim_factors}
+        # Translate input index coordinate to offset in physical space
+        # NOTE: This method fails to account for direction matrix
+        return {dim: input_index[dim] * input_spacing[dim] + input_origin[dim]
+                          for dim in image_dims if dim in dim_factors}
 
     def compute_sigma(input_spacings, shrink_factors) -> list:
-        '''
-        Compute Gaussian kernel sigma values for resampling to isotropic spacing.
-        Input and output lists are assumed to be in xyzt order
+        '''Compute Gaussian kernel sigma values for resampling to isotropic spacing.
         sigma = sqrt((isoSpacing^2 - inputSpacing[0]^2)/(2*sqrt(2*ln(2)))^2)
         Ref https://discourse.itk.org/t/resampling-to-isotropic-signal-processing-theory/1403/16
+
+        input spacings: List
+            Input image physical spacings in xyzt order
+
+        shrink_factors: List
+            Shrink ratio along each axis in xyzt order
+
+        result: List
+            Standard deviation of Gaussian kernel along each axis in xyzt order
         '''
         assert len(input_spacings) == len(shrink_factors)
         import math
@@ -430,7 +495,7 @@ def to_multiscale(
             filt.UpdateOutputInformation()
             block_output = filt.GetOutput()
             block_0_output_spacing = block_output.GetSpacing()
-            block_0_output_origin = block_output.GetOrigin()   # TODO examine underlying shift logic
+            block_0_output_origin = block_output.GetOrigin()
             
             block_0_scale = {
                 image_dims[i]: s for (i, s) in enumerate(block_0_output_spacing)
@@ -497,15 +562,30 @@ def to_multiscale(
             )
             current_input = downscaled
     elif method is Methods.DASK_GAUSSIAN:
-        import itk
         import dask_image.ndfilters
+        import dask_image.ndinterp
 
         def get_truncate(xarray_image, sigma_values, truncate_start=4.0) -> float:
             '''Discover truncate parameter yielding a viable kernel width
                for dask_image.ndfilters.gaussian_filter processing. Block overlap
                cannot be greater than image size, so kernel radius is more limited
                for small images. A lower stddev truncation ceiling for kernel
-               generation can result in a less precise kernel.'''
+               generation can result in a less precise kernel.
+
+            xarray_image: xarray.core.dataarray.DataArray
+               Chunked image to be smoothed
+
+            sigma:values: List
+               Gaussian kernel standard deviations in tzyx order
+
+            truncate_start: float
+               First truncation value to try.
+               "dask_image.ndfilters.gaussian_filter" defaults to 4.0.
+
+            result: float
+               Truncation value found to yield largest possible kernel width without
+               extending beyond one chunk such that chunked smoothing would fail.
+            '''
 
             from dask_image.ndfilters._gaussian import _get_border
 
@@ -521,33 +601,6 @@ def to_multiscale(
 
             return truncate
 
-
-        def downsample(xarray_data, shrink_factors):
-            '''Downsample a given image chunk'''
-
-            # xarray chunk does not have metadata attached, input values are ITK defaults
-            image = itk.image_view_from_array(xarray_data)
-            input_spacing = itk.spacing(image)
-            input_origin = itk.origin(image)
-            
-            # Skip this image block if it has 0 voxels
-            block_size = itk.size(image)
-
-            if(any([block_len == 0 for block_len in block_size])):
-                return None
-            
-            # Output values are relative to input
-            itk_shrink_factors = shrink_factors  # xyzt
-            output_spacing = [s * f for s, f in zip(itk.spacing(image), itk_shrink_factors)]
-            output_size = [max(0,int(image_len / shrink_factor))
-                for image_len, shrink_factor in zip(itk.size(image), itk_shrink_factors)]
-            
-            # Resample with ITK
-            return itk.resample_image_filter(image,
-                size=output_size,
-                output_spacing=output_spacing,
-                output_origin=input_origin)
-
         for factor_index, scale_factor in enumerate(scale_factors):
             dim_factors = dim_scale_factors(scale_factor)
             current_input = align_chunks(current_input, dim_factors)
@@ -555,52 +608,42 @@ def to_multiscale(
             image_dims: Tuple[str, str, str, str] = ("x", "y", "z", "t")
             shrink_factors = [dim_factors[sf] for sf in image_dims if sf in dim_factors]
 
-            # Compute metadata for region splitting
-
-            # Blocks 0, ..., N-2 have the same shape
-            block_0_input = get_block(current_input,0)
-            block_0_image = itk.image_from_xarray(block_0_input)
-
-            sigma_values = compute_sigma(itk.spacing(block_0_image), shrink_factors)
-
-            # Compute output size and spatial metadata for blocks 0, .., N-2
-            filt = itk.BinShrinkImageFilter.New(
-                block_0_image, shrink_factors=shrink_factors
-            )
-            filt.UpdateOutputInformation()
-            block_output = filt.GetOutput()
-            block_0_output_spacing = block_output.GetSpacing()
-            block_0_output_origin = block_output.GetOrigin()   # TODO examine underlying shift logic
-            
-            block_0_scale = {
-                image_dims[i]: s for (i, s) in enumerate(block_0_output_spacing)
-            }
-            block_0_translation = {
-                image_dims[i]: s for (i, s) in enumerate(block_0_output_origin)
-            }
-            dtype = block_output.dtype
-
-            # Discover viable truncate parameter
+            # Compute/discover region splitting parameters
+            input_spacing = compute_input_spacing(current_input)
+            input_spacing = [input_spacing[dim] for dim in image_dims if dim in dim_factors]
+            sigma_values = compute_sigma(input_spacing, shrink_factors)
             truncate = get_truncate(current_input, np.flip(sigma_values))
+
+            # Compute output shape and metadata
+            output_shape = [int(image_len / shrink_factor)
+                for image_len, shrink_factor in zip(current_input.shape, np.flip(shrink_factors))]
+            output_spacing = compute_output_spacing(current_input, dim_factors)
+            output_origin = compute_output_origin(current_input, dim_factors)
 
             blurred_array = dask_image.ndfilters.gaussian_filter(
                 image=current_input.data,
-                sigma=np.flip(sigma_values), #tzyx order
+                sigma=np.flip(sigma_values), # tzyx order
                 mode='nearest',
                 truncate=truncate
             )
 
-            downscaled_array = map_blocks(
-                downsample,
+            # Construct downsample parameters
+            image_dimension = len(dim_factors)
+            transform = np.eye(image_dimension)
+            for dim, shrink_factor in enumerate(np.flip(shrink_factors)):
+                transform[dim,dim] = shrink_factor
+
+            downscaled_array = dask_image.ndinterp.affine_transform(
                 blurred_array,
-                shrink_factors=shrink_factors,
-                dtype=dtype).compute()
+                matrix=transform,
+                output_shape=output_shape # tzyx order
+            ).compute()
             
             downscaled = to_spatial_image(
                 downscaled_array,
                 dims=image.dims,
-                scale=block_0_scale,
-                translation=block_0_translation,
+                scale=output_spacing,
+                translation=output_origin,
                 name=current_input.name,
                 axis_names={
                     d: image.coords[d].attrs.get("long_name", d) for d in image.dims
