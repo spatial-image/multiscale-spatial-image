@@ -21,6 +21,7 @@ requires = [
 [tool.flit.metadata.requires-extra]
 test = [
     "itk-filtering>=5.3rc4",
+    "dask_image",
     "jsonschema",
     "pytest",
     "pytest-mypy",

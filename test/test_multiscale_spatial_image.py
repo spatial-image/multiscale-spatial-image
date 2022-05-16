@@ -10,7 +10,7 @@ from pathlib import Path
 from multiscale_spatial_image import Methods, to_multiscale
 
 IPFS_FS = IPFSFileSystem()
-IPFS_CID = "bafybeidas77ut6e2cma4cbxa2l5gr5gpzwy6nkj3wefqphjmta7z5tojqa"
+IPFS_CID = "bafybeifcqiwu6qpj55v2vyhsdoaugsrt7d4kbbjrh7zrjplleddkqkqwty"
 DATA_PATH = Path(__file__).absolute().parent / "data"
 
 
@@ -104,8 +104,10 @@ def test_isotropic_scale_factors(input_images):
     image = input_images[dataset_name]
     multiscale = to_multiscale(image, [2, 3, 4], method=Methods.ITK_BIN_SHRINK)
     baseline_name = "2_3_4/ITK_BIN_SHRINK"
-    verify_against_baseline(dataset_name, baseline_name, multiscale)  
+    verify_against_baseline(dataset_name, baseline_name, multiscale)
+
     
+def test_gaussian_isotropic_scale_factors(input_images):
     dataset_name = "cthead1"
     image = input_images[dataset_name]
     baseline_name = "2_4/ITK_GAUSSIAN"
@@ -122,6 +124,24 @@ def test_isotropic_scale_factors(input_images):
     image = input_images[dataset_name]
     baseline_name = "2_3_4/ITK_GAUSSIAN"
     multiscale = to_multiscale(image, [2, 3, 4], method=Methods.ITK_GAUSSIAN)
+    verify_against_baseline(dataset_name, baseline_name, multiscale)
+    
+    dataset_name = "cthead1"
+    image = input_images[dataset_name]
+    baseline_name = "2_4/DASK_GAUSSIAN"
+    multiscale = to_multiscale(image, [2, 4], method=Methods.DASK_GAUSSIAN)
+    verify_against_baseline(dataset_name, baseline_name, multiscale)
+
+    dataset_name = "cthead1"
+    image = input_images[dataset_name]
+    baseline_name = "2_3/DASK_GAUSSIAN"
+    multiscale = to_multiscale(image, [2, 3], method=Methods.DASK_GAUSSIAN)
+    verify_against_baseline(dataset_name, baseline_name, multiscale)
+
+    dataset_name = "small_head"
+    image = input_images[dataset_name]
+    baseline_name = "2_3_4/DASK_GAUSSIAN"
+    multiscale = to_multiscale(image, [2, 3, 4], method=Methods.DASK_GAUSSIAN)
     verify_against_baseline(dataset_name, baseline_name, multiscale)
 
 
@@ -165,6 +185,8 @@ def test_anisotropic_scale_factors(input_images):
     baseline_name = "x3y2z4_x2y2z2_x1y2z1/ITK_BIN_SHRINK"
     verify_against_baseline(dataset_name, baseline_name, multiscale)
     
+
+def test_gaussian_anisotropic_scale_factors(input_images):
     dataset_name = "cthead1"
     image = input_images[dataset_name]
     scale_factors = [{"x": 2, "y": 4}, {"x": 1, "y": 2}]
@@ -181,4 +203,22 @@ def test_anisotropic_scale_factors(input_images):
     ]
     multiscale = to_multiscale(image, scale_factors, method=Methods.ITK_GAUSSIAN)
     baseline_name = "x3y2z4_x2y2z2_x1y2z1/ITK_GAUSSIAN"
+    verify_against_baseline(dataset_name, baseline_name, multiscale)
+
+    dataset_name = "cthead1"
+    image = input_images[dataset_name]
+    scale_factors = [{"x": 2, "y": 4}, {"x": 1, "y": 2}]
+    multiscale = to_multiscale(image, scale_factors, method=Methods.DASK_GAUSSIAN)
+    baseline_name = "x2y4_x1y2/DASK_GAUSSIAN"
+    verify_against_baseline(dataset_name, baseline_name, multiscale)
+
+    dataset_name = "small_head"
+    image = input_images[dataset_name]
+    scale_factors = [
+        {"x": 3, "y": 2, "z": 4},
+        {"x": 2, "y": 2, "z": 2},
+        {"x": 1, "y": 2, "z": 1},
+    ]
+    multiscale = to_multiscale(image, scale_factors, method=Methods.DASK_GAUSSIAN)
+    baseline_name = "x3y2z4_x2y2z2_x1y2z1/DASK_GAUSSIAN"
     verify_against_baseline(dataset_name, baseline_name, multiscale)
