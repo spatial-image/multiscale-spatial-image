@@ -1,0 +1,37 @@
+# This CITATION.cff file was generated with cffinit.
+# Visit https://bit.ly/cffinit to generate yours today!
+
+cff-version: 1.2.0
+title: >-
+  multiscale-spatial-image: A multiscale, chunked,
+  multi-dimensional Xarray spatial image data
+  structure, serializable to OME-NGFF and netCDF.
+message: >-
+  If you use this software, please cite it using the
+  metadata from this file.
+type: software
+authors:
+  - given-names: Matthew
+    family-names: McCormick
+    email: matt.mccormick@kitware.com
+    affiliation: 'Kitware, Inc'
+    orcid: 'https://orcid.org/0000-0001-9475-3756'
+  - given-names: Thomas
+    family-names: Birdsong
+    email: tom.birdsong@kitware.com
+    affiliation: 'Kitware, Inc'
+repository-code: >-
+  https://github.com/spatial-image/multiscale-spatial-image
+repository-artifact: 'https://pypi.org/project/multiscale_spatial_image/'
+keywords:
+  - scientific
+  - imaging
+  - ngff
+  - zarr
+  - netcdf
+  - xarray
+  - python
+  - multiscale
+  - scalespace
+  - spatial pyramids
+license: Apache-2.0
