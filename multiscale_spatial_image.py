@@ -135,7 +135,7 @@ class Methods(Enum):
     XARRAY_COARSEN = "xarray.DataArray.coarsen"
     ITK_BIN_SHRINK = "itk.bin_shrink_image_filter"
     ITK_GAUSSIAN = "itk.discrete_gaussian_image_filter"
-    DASK_GAUSSIAN = "dask_image.ndfilters.gaussian_filter"
+    DASK_IMAGE_GAUSSIAN = "dask_image.ndfilters.gaussian_filter"
 
 
 def to_multiscale(
@@ -561,7 +561,7 @@ def to_multiscale(
                 name=image.name, promote_attrs=True
             )
             current_input = downscaled
-    elif method is Methods.DASK_GAUSSIAN:
+    elif method is Methods.DASK_IMAGE_GAUSSIAN:
         import dask_image.ndfilters
         import dask_image.ndinterp
 
