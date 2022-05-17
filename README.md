@@ -91,6 +91,8 @@ store = zarr.storage.DirectoryStore('multiscale.zarr', dimension_separator='/')
 multiscale.to_zarr(store)
 ```
 
+**Note**: The API is under development, and it may change until 1.0.0 is
+released. We mean it :-).
 
 ## Examples
 
