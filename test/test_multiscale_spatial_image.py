@@ -7,10 +7,10 @@ from zarr.storage import DirectoryStore
 from datatree import open_datatree
 from pathlib import Path
 
-from multiscale_spatial_image import Methods, to_multiscale
+from multiscale_spatial_image import Methods, to_multiscale, itk_image_to_multiscale
 
 IPFS_FS = IPFSFileSystem()
-IPFS_CID = "bafybeibreqz4dm3eejhlbdkeb2uucsi7jgu6fhdfym4o25o7b44tbbomle"
+IPFS_CID = "bafybeigvlkgbx7xzi5evt3zb3fsa47dxa5cmpkcfxib6fvix7m4e2pu6pq"
 DATA_PATH = Path(__file__).absolute().parent / "data"
 
 
@@ -66,6 +66,7 @@ def store_new_image(multiscale_image, dataset_name, baseline_name):
     store = DirectoryStore(
         DATA_PATH / f"baseline/{dataset_name}/{baseline_name}", dimension_separator="/",
     )
+    path = DATA_PATH / f"baseline/{dataset_name}/{baseline_name}"
     multiscale_image.to_zarr(store)
 
 def test_isotropic_scale_factors(input_images):
@@ -222,3 +223,63 @@ def test_gaussian_anisotropic_scale_factors(input_images):
     multiscale = to_multiscale(image, scale_factors, method=Methods.DASK_IMAGE_GAUSSIAN)
     baseline_name = "x3y2z4_x2y2z2_x1y2z1/DASK_IMAGE_GAUSSIAN"
     verify_against_baseline(dataset_name, baseline_name, multiscale)
+
+def test_from_itk(input_images):
+    import itk
+    import numpy as np
+
+    # Test 2D with ITK default metadata
+    dataset_name = "cthead1"
+    image = itk.image_from_xarray(input_images[dataset_name])
+    scale_factors=[4,2]
+    multiscale = itk_image_to_multiscale(image, scale_factors)
+    baseline_name = "4_2/from_itk"
+    store_new_image(multiscale, dataset_name, baseline_name)
+    verify_against_baseline(dataset_name, baseline_name, multiscale)
+
+    # Test 2D with nonunit metadata
+    dataset_name = "cthead1"
+    image = itk.image_from_xarray(input_images[dataset_name])
+    image.SetDirection(np.array([[-1,0],[0,1]]))
+    image.SetSpacing([0.5,2.0])
+    image.SetOrigin([3.0,5.0])
+
+    name='cthead1_nonunit_metadata'
+    axis_units={dim: 'millimeters' for dim in ('x','y','z')}
+
+    scale_factors=[4,2]
+    multiscale = itk_image_to_multiscale(image, scale_factors=scale_factors, anatomical_axes=False, axis_units=axis_units, name=name)
+    baseline_name = "4_2/from_itk_nonunit_metadata"
+    store_new_image(multiscale, dataset_name, baseline_name)
+    verify_against_baseline(dataset_name, baseline_name, multiscale)
+
+    # Expect error for 2D image with anatomical axes
+    try:
+        itk_image_to_multiscale(image, scale_factors=scale_factors, anatomical_axes=True)
+        raise Exception('Failed to catch expected exception for 2D image requesting anatomical axes')
+    except ValueError:
+        pass # caught expected exception
+    
+    # Test 3D with ITK default metadata
+    dataset_name = "small_head"
+    image = itk.image_from_xarray(input_images[dataset_name])
+    scale_factors=[4,2]
+    multiscale = itk_image_to_multiscale(image, scale_factors)
+    baseline_name = "4_2/from_itk"
+    store_new_image(multiscale, dataset_name, baseline_name)
+    verify_against_baseline(dataset_name, baseline_name, multiscale)
+
+    # Test 3D with additional metadata
+    dataset_name = "small_head"
+    image = itk.image_from_xarray(input_images[dataset_name])
+    image.SetObjectName(str(input_images[dataset_name].name)) # implicit in image_from_xarray in itk>v5.3rc04
+
+    name='small_head_anatomical'
+    axis_units={dim: 'millimeters' for dim in input_images[dataset_name].dims}
+
+    scale_factors=[4,2]
+    multiscale = itk_image_to_multiscale(image, scale_factors=scale_factors, anatomical_axes=True, axis_units=axis_units, name=name)
+    baseline_name = "4_2/from_itk_anatomical"
+    store_new_image(multiscale, dataset_name, baseline_name)
+    verify_against_baseline(dataset_name, baseline_name, multiscale)
+    
