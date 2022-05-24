@@ -136,7 +136,7 @@ class Methods(Enum):
     XARRAY_COARSEN = "xarray.DataArray.coarsen"
     ITK_BIN_SHRINK = "itk.bin_shrink_image_filter"
     ITK_GAUSSIAN = "itk.discrete_gaussian_image_filter"
-    ITK_LABEL_GAUSSIAN = "itk.discrete_gaussian_image_filter"
+    ITK_LABEL_GAUSSIAN = "itk.discrete_gaussian_image_filter_label_interpolator"
     DASK_IMAGE_GAUSSIAN = "dask_image.ndfilters.gaussian_filter"
 
 
@@ -335,7 +335,7 @@ def to_multiscale(
 
         return [generate_radius(dim) for dim in range(image_dimension)]
 
-    def itk_blur_and_downsample(xarray_data, gaussian_filter, interpolator, shrink_factors, sigma_values, kernel_radius):
+    def itk_blur_and_downsample(xarray_data, gaussian_filter_name, interpolator_name, shrink_factors, sigma_values, kernel_radius):
         '''Blur and then downsample a given image chunk'''
         import itk
         
@@ -357,20 +357,30 @@ def to_multiscale(
             for image_len, radius, shrink_factor in zip(itk.size(image), itk_kernel_radius, itk_shrink_factors)]
 
         # Optionally run accelerated smoothing with itk-vkfft
-        if gaussian_filter == 'VkDiscreteGaussianImageFilter':
+        if gaussian_filter_name == 'VkDiscreteGaussianImageFilter':
             smoothing_filter_template = itk.VkDiscreteGaussianImageFilter
-        elif gaussian_filter == 'DiscreteGaussianImageFilter':
+        elif gaussian_filter_name == 'DiscreteGaussianImageFilter':
             smoothing_filter_template = itk.DiscreteGaussianImageFilter
         else:
-            raise ValueError(f'Unsupported gaussian_filter {gaussian_filter}')
+            raise ValueError(f'Unsupported gaussian_filter {gaussian_filter_name}')
 
         # Construct pipeline
         smoothing_filter = smoothing_filter_template.New(image, 
             sigma_array=sigma_values, 
             use_image_spacing=False)            
 
-        if interpolator == 'LinearInterpolateImageFunction':
+        if interpolator_name == 'LinearInterpolateImageFunction':
             interpolator_instance = itk.LinearInterpolateImageFunction.New(smoothing_filter.GetOutput())
+        elif interpolator_name == 'LabelImageGaussianInterpolateImageFunction':
+            interpolator_instance = itk.LabelImageGaussianInterpolateImageFunction.New(smoothing_filter.GetOutput())
+            # Similar approach as compute_sigma
+            # Ref: https://link.springer.com/content/pdf/10.1007/978-3-319-24571-3_81.pdf
+            sigma = [s * 0.7355 for s in output_spacing]
+            sigma_max = max(sigma)
+            interpolator_instance.SetSigma(sigma)
+            interpolator_instance.SetAlpha(sigma_max * 2.5)
+        else:
+            raise ValueError(f'Unsupported interpolator_name {interpolator_name}')
         
         shrink_filter = itk.ResampleImageFilter.New(smoothing_filter.GetOutput(),
             interpolator=interpolator_instance,
@@ -478,11 +488,11 @@ def to_multiscale(
 
         # Optionally run accelerated smoothing with itk-vkfft
         if 'VkFFTBackend' in dir(itk):
-            gaussian_filter = 'VkDiscreteGaussianImageFilter'
+            gaussian_filter_name = 'VkDiscreteGaussianImageFilter'
         else:
-            gaussian_filter = 'DiscreteGaussianImageFilter'
+            gaussian_filter_name = 'DiscreteGaussianImageFilter'
 
-        interpolator = 'LinearInterpolateImageFunction'
+        interpolator_name = 'LinearInterpolateImageFunction'
 
         for factor_index, scale_factor in enumerate(scale_factors):
             dim_factors = dim_scale_factors(scale_factor)
@@ -548,8 +558,111 @@ def to_multiscale(
             downscaled_array = map_overlap(
               itk_blur_and_downsample,
               current_input.data,
-              gaussian_filter=gaussian_filter,
-              interpolator=interpolator,
+              gaussian_filter_name=gaussian_filter_name,
+              interpolator_name=interpolator_name,
+              shrink_factors=shrink_factors,
+              sigma_values=sigma_values,
+              kernel_radius=kernel_radius,
+              dtype=dtype,
+              depth={dim: radius for dim, radius in enumerate(np.flip(kernel_radius))}, # overlap is in tzyx
+              boundary='nearest',
+              trim=False   # Overlapped region is trimmed in blur_and_downsample to output size
+            ).compute()
+            
+            downscaled = to_spatial_image(
+                downscaled_array,
+                dims=image.dims,
+                scale=block_0_scale,
+                translation=block_0_translation,
+                name=current_input.name,
+                axis_names={
+                    d: image.coords[d].attrs.get("long_name", d) for d in image.dims
+                },
+                axis_units={
+                    d: image.coords[d].attrs.get("units", "") for d in image.dims
+                },
+                t_coords=image.coords.get("t", None),
+                c_coords=image.coords.get("c", None),
+            )
+            downscaled = downscaled.chunk(out_chunks)
+            data_objects[f"scale{factor_index+1}"] = downscaled.to_dataset(
+                name=image.name, promote_attrs=True
+            )
+            current_input = downscaled
+
+    elif method is Methods.ITK_LABEL_GAUSSIAN:
+        # Uses the LabelImageGaussianInterpolateImageFunction. More appropriate for integer label images.
+        import itk         
+
+        gaussian_filter_name = 'DiscreteGaussianImageFilter'
+        interpolator_name = 'LabelImageGaussianInterpolateImageFunction'
+
+        for factor_index, scale_factor in enumerate(scale_factors):
+            dim_factors = dim_scale_factors(scale_factor)
+            current_input = align_chunks(current_input, dim_factors)
+
+            image_dims: Tuple[str, str, str, str] = ("x", "y", "z", "t")
+            shrink_factors = [dim_factors[sf] for sf in image_dims if sf in dim_factors]
+
+            # Compute metadata for region splitting
+
+            # Blocks 0, ..., N-2 have the same shape
+            block_0_input = get_block(current_input,0)
+            # Block N-1 may be smaller than preceding blocks
+            block_neg1_input = get_block(current_input,-1)
+
+            # Compute overlap for Gaussian blurring for all blocks
+            block_0_image = itk.image_from_xarray(block_0_input)
+            input_spacing = itk.spacing(block_0_image)
+            sigma_values = compute_sigma(input_spacing, shrink_factors)
+            kernel_radius = compute_itk_gaussian_kernel_radius(itk.size(block_0_image), sigma_values, shrink_factors)
+
+            # Compute output size and spatial metadata for blocks 0, .., N-2
+            filt = itk.BinShrinkImageFilter.New(
+                block_0_image, shrink_factors=shrink_factors
+            )
+            filt.UpdateOutputInformation()
+            block_output = filt.GetOutput()
+            block_0_output_spacing = block_output.GetSpacing()
+            block_0_output_origin = block_output.GetOrigin()
+            
+            block_0_scale = {
+                image_dims[i]: s for (i, s) in enumerate(block_0_output_spacing)
+            }
+            block_0_translation = {
+                image_dims[i]: s for (i, s) in enumerate(block_0_output_origin)
+            }
+            dtype = block_output.dtype
+            
+            computed_size = [int(block_len / shrink_factor) 
+                for block_len, shrink_factor in zip(itk.size(block_0_image), shrink_factors)]
+            assert all([itk.size(block_output)[dim] == computed_size[dim]
+                        for dim in range(block_output.ndim)])
+            output_chunks = list(current_input.chunks)
+            for i, c in enumerate(output_chunks):
+                output_chunks[i] = [
+                    block_output.shape[i],
+                ] * len(c)
+
+            # Compute output size for block N-1
+            block_neg1_image = itk.image_from_xarray(block_neg1_input)
+            filt.SetInput(block_neg1_image)
+            filt.UpdateOutputInformation()
+            block_output = filt.GetOutput()
+            computed_size = [int(block_len / shrink_factor) 
+                for block_len, shrink_factor in zip(itk.size(block_neg1_image), shrink_factors)]
+            assert all([itk.size(block_output)[dim] == computed_size[dim]
+                        for dim in range(block_output.ndim)])
+            for i, c in enumerate(output_chunks):
+                output_chunks[i][-1] = block_output.shape[i]
+                output_chunks[i] = tuple(output_chunks[i])
+            output_chunks = tuple(output_chunks)
+
+            downscaled_array = map_overlap(
+              itk_blur_and_downsample,
+              current_input.data,
+              gaussian_filter_name=gaussian_filter_name,
+              interpolator_name=interpolator_name,
               shrink_factors=shrink_factors,
               sigma_values=sigma_values,
               kernel_radius=kernel_radius,
