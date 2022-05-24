@@ -10,7 +10,7 @@ from pathlib import Path
 from multiscale_spatial_image import Methods, to_multiscale, itk_image_to_multiscale
 
 IPFS_FS = IPFSFileSystem()
-IPFS_CID = "bafybeigvlkgbx7xzi5evt3zb3fsa47dxa5cmpkcfxib6fvix7m4e2pu6pq"
+IPFS_CID = "bafybeihjwerpt2nxihajhco5ukl2sjatvhoerx7qn2clriwti7zjs7tvg4"
 DATA_PATH = Path(__file__).absolute().parent / "data"
 
 
@@ -33,6 +33,13 @@ def input_images():
     image_ds = xr.open_zarr(store)
     image_da = image_ds.small_head
     result["small_head"] = image_da
+
+    store = DirectoryStore(
+        DATA_PATH / "input" / "2th_cthead1.zarr",
+    )
+    image_ds = xr.open_zarr(store)
+    image_da = image_ds['2th_cthead1']
+    result["2th_cthead1"] = image_da
 
     return result
 
@@ -146,6 +153,20 @@ def test_gaussian_isotropic_scale_factors(input_images):
     verify_against_baseline(dataset_name, baseline_name, multiscale)
 
 
+def test_label_gaussian_isotropic_scale_factors(input_images):
+    dataset_name = "2th_cthead1"
+    image = input_images[dataset_name]
+    baseline_name = "2_4/ITK_LABEL_GAUSSIAN"
+    multiscale = to_multiscale(image, [2, 4], method=Methods.ITK_LABEL_GAUSSIAN)
+    verify_against_baseline(dataset_name, baseline_name, multiscale)
+
+    dataset_name = "2th_cthead1"
+    image = input_images[dataset_name]
+    baseline_name = "2_3/ITK_LABEL_GAUSSIAN"
+    multiscale = to_multiscale(image, [2, 3], method=Methods.ITK_LABEL_GAUSSIAN)
+    verify_against_baseline(dataset_name, baseline_name, multiscale)
+
+
 def test_anisotropic_scale_factors(input_images):
     dataset_name = "cthead1"
     image = input_images[dataset_name]
@@ -223,6 +244,16 @@ def test_gaussian_anisotropic_scale_factors(input_images):
     multiscale = to_multiscale(image, scale_factors, method=Methods.DASK_IMAGE_GAUSSIAN)
     baseline_name = "x3y2z4_x2y2z2_x1y2z1/DASK_IMAGE_GAUSSIAN"
     verify_against_baseline(dataset_name, baseline_name, multiscale)
+
+
+def test_label_gaussian_anisotropic_scale_factors(input_images):
+    dataset_name = "2th_cthead1"
+    image = input_images[dataset_name]
+    scale_factors = [{"x": 2, "y": 4}, {"x": 1, "y": 2}]
+    multiscale = to_multiscale(image, scale_factors, method=Methods.ITK_LABEL_GAUSSIAN)
+    baseline_name = "x2y4_x1y2/ITK_LABEL_GAUSSIAN"
+    verify_against_baseline(dataset_name, baseline_name, multiscale)
+
 
 def test_from_itk(input_images):
     import itk
