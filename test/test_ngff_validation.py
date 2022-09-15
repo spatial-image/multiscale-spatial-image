@@ -1,4 +1,3 @@
-from audioop import mul
 import json
 from typing import Dict
 import urllib.request
@@ -22,10 +21,9 @@ def load_schema(version: str = "0.4", strict: bool = False) -> Dict:
         schema = json.loads(url.read().decode())
     return schema
 
-
 def check_valid_ngff(multiscale: MultiscaleSpatialImage):
     store = zarr.storage.MemoryStore(dimension_separator="/")
-    multiscale.to_zarr(store)
+    multiscale.to_zarr(store, compute=True)
     zarr.convenience.consolidate_metadata(store)
     metadata = json.loads(store.get(".zmetadata"))["metadata"]
     ngff = metadata[".zattrs"]
