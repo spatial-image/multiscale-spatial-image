@@ -252,7 +252,6 @@ def test_from_itk(web3_data, input_images):
     scale_factors=[4,2]
     multiscale = itk_image_to_multiscale(image, scale_factors)
     baseline_name = "4_2/from_itk"
-    store_new_image(web3_data, multiscale, dataset_name, baseline_name)
     verify_against_baseline(web3_data, dataset_name, baseline_name, multiscale)
 
     # Test 2D with nonunit metadata
@@ -268,7 +267,6 @@ def test_from_itk(web3_data, input_images):
     scale_factors=[4,2]
     multiscale = itk_image_to_multiscale(image, scale_factors=scale_factors, anatomical_axes=False, axis_units=axis_units, name=name)
     baseline_name = "4_2/from_itk_nonunit_metadata"
-    store_new_image(web3_data, multiscale, dataset_name, baseline_name)
     verify_against_baseline(web3_data, dataset_name, baseline_name, multiscale)
 
     # Expect error for 2D image with anatomical axes
@@ -284,7 +282,6 @@ def test_from_itk(web3_data, input_images):
     scale_factors=[4,2]
     multiscale = itk_image_to_multiscale(image, scale_factors)
     baseline_name = "4_2/from_itk"
-    store_new_image(web3_data, multiscale, dataset_name, baseline_name)
     verify_against_baseline(web3_data, dataset_name, baseline_name, multiscale)
 
     # Test 3D with additional metadata
@@ -298,6 +295,5 @@ def test_from_itk(web3_data, input_images):
     scale_factors=[4,2]
     multiscale = itk_image_to_multiscale(image, scale_factors=scale_factors, anatomical_axes=True, axis_units=axis_units, name=name)
     baseline_name = "4_2/from_itk_anatomical"
-    store_new_image(web3_data, multiscale, dataset_name, baseline_name)
     verify_against_baseline(web3_data, dataset_name, baseline_name, multiscale)
     
