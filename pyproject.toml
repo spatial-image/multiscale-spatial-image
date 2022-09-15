@@ -25,6 +25,7 @@ test = [
     "jsonschema",
     "pytest",
     "pytest-mypy",
+    "pytest-web3-data",
     "fsspec",
     "ipfsspec",
     "urllib3",

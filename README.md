@@ -111,9 +111,7 @@ To run the test suite:
 git clone https://github.com/spatial-image/multiscale-spatial-image
 cd multiscale-spatial-image
 pip install -e ".[test]"
-cid=$(grep 'IPFS_CID =' test/test_multiscale_spatial_image.py | cut -d ' ' -f 3 | tr -d '"')
-# Needs ipfs, e.g. https://docs.ipfs.io/install/ipfs-desktop/
-ipfs get -o ./test/data -- $cid
+# We recommend running IPFS, e.g. via https://docs.ipfs.io/install/ipfs-desktop/
 pytest
 # Notebook tests
 pytest --nbmake --nbmake-timeout=3000 examples/*ipynb
@@ -126,10 +124,18 @@ dataset_name = "cthead1"
 image = input_images[dataset_name]
 baseline_name = "2_4/XARRAY_COARSEN"
 multiscale = to_multiscale(image, [2, 4], method=Methods.XARRAY_COARSEN)
-verify_against_baseline(dataset_name, baseline_name, multiscale)
+verify_against_baseline(web3_data, dataset_name, baseline_name, multiscale)
 ```
 
-Serialize the result:
+First copy the current testing data to a staging directory, e.g.
+
+```console
+cp -a ./test/data/bafy* ./test/data/staging
+```
+
+And update the `web3_data_dir` path in the *pytest.ini* file from `test/data/bafy*` to `test/data/staging`.
+
+Add a `store_new_image` call in your test block:
 
 ```py
 dataset_name = "cthead1"
@@ -137,15 +143,12 @@ image = input_images[dataset_name]
 baseline_name = "2_4/XARRAY_COARSEN"
 multiscale = to_multiscale(image, [2, 4], method=Methods.XARRAY_COARSEN)
 
-store = DirectoryStore(
-    DATA_PATH / f"baseline/{dataset_name}/{baseline_name}", dimension_separator="/"
-)
-multiscale.to_zarr(store, mode="w")
+store_new_image(web3_data, multiscale, dataset_name, baseline_name)
 
-verify_against_baseline(dataset_name, baseline_name, multiscale)
+verify_against_baseline(web3_data, dataset_name, baseline_name, multiscale)
 ```
 
-Run the tests to generate the output.
+Run the tests to generate the output. Remove the `store_new_image` call.
 
 Once the new test data is present locally, upload the result to IPFS:
 
@@ -153,11 +156,10 @@ Once the new test data is present locally, upload the result to IPFS:
 npm install -g @web3-storage/w3
 # Get an upload token from https://web3.storage
 w3 token
-w3 put ./test/data --no-wrap --name multiscale-spatial-image-topic-name --hidden
+w3 put ./test/data/staging --no-wrap --name multiscale-spatial-image-topic-name --hidden
 ```
 
-The update the resulting root CID in the [`IPFS_CID` variable](https://github.com/spatial-image/multiscale-spatial-image/blob/2d214d4d8a7eb475d76ddcd4c3d5e6932eecef56/test/test_multiscale_spatial_image.py#L13).
-
+The update the resulting root [Content Identifier (CID)](https://proto.school/anatomy-of-a-cid/01)in the *pytest.ini* `web3_data_dir` path.
 
 
 [spatial-image]: https://github.com/spatial-image/spatial-image
