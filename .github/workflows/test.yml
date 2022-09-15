@@ -24,7 +24,8 @@ jobs:
       - name: Setup ipfs
         uses: ibnesayeed/setup-ipfs@master
         with:
-          ipfs_version: ^0.12
+          ipfs_version: ^0.15
+          run_daemon: true
       - name: Connect to ipfs peers with our data
         shell: bash
         run: |
@@ -43,11 +44,6 @@ jobs:
           ipfs swarm connect /dnsaddr/nyc1-1.hostnodes.pinata.cloud/p2p/QmRjLSisUCHVpFa5ELVvX3qVPfdxajxWJEHs9kN3EcxAW6
           ipfs swarm connect /dnsaddr/nyc1-2.hostnodes.pinata.cloud/p2p/QmPySsdmbczdZYBpbi2oq2WMJ8ErbfxtkG8Mo192UHkfGP
           ipfs swarm connect /dnsaddr/nyc1-3.hostnodes.pinata.cloud/p2p/QmSarArpxemsPESa6FNkmuu9iSE1QWqPX2R3Aw6f5jq4D5
-      - name: Pin ipfs testing data locally
-        shell: bash
-        run: |
-          cid=$(grep 'IPFS_CID =' test/test_multiscale_spatial_image.py | cut -d ' ' -f 3 | tr -d '"')
-          ipfs get -o ./test/data -- $cid
       - name: Test with pytest
         run: |
           pytest --junitxml=junit/test-results.xml
