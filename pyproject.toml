@@ -27,6 +27,7 @@ test = [
     "pytest-mypy",
     "fsspec",
     "ipfsspec",
+    "urllib3",
     "nbmake",
     "zarr",
 ]
