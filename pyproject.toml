@@ -23,10 +23,12 @@ test = [
     "itk-filtering>=5.3rc4",
     "dask_image",
     "jsonschema",
+    "pooch",
     "pytest",
     "pytest-mypy",
     "fsspec",
     "ipfsspec",
+    "urllib3",
     "nbmake",
     "zarr",
 ]

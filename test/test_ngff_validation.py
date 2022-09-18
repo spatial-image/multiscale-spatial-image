@@ -1,7 +1,6 @@
-from audioop import mul
 import json
 from typing import Dict
-import urllib.request
+import urllib3
 
 from jsonschema import RefResolver, Draft202012Validator
 from jsonschema.exceptions import ValidationError
@@ -13,19 +12,19 @@ from spatial_image import to_spatial_image
 import numpy as np
 import zarr
 
+http = urllib3.PoolManager()
 
 def load_schema(version: str = "0.4", strict: bool = False) -> Dict:
     strict_str = ""
     if strict:
         strict_str = "strict_"
-    with urllib.request.urlopen(f"https://ngff.openmicroscopy.org/{version}/schemas/{strict_str}image.schema") as url:
-        schema = json.loads(url.read().decode())
+    response = http.request("GET", f"https://ngff.openmicroscopy.org/{version}/schemas/{strict_str}image.schema")
+    schema = json.loads(response.data.decode())
     return schema
-
 
 def check_valid_ngff(multiscale: MultiscaleSpatialImage):
     store = zarr.storage.MemoryStore(dimension_separator="/")
-    multiscale.to_zarr(store)
+    multiscale.to_zarr(store, compute=True)
     zarr.convenience.consolidate_metadata(store)
     metadata = json.loads(store.get(".zmetadata"))["metadata"]
     ngff = metadata[".zattrs"]
