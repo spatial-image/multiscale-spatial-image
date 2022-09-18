@@ -111,7 +111,6 @@ To run the test suite:
 git clone https://github.com/spatial-image/multiscale-spatial-image
 cd multiscale-spatial-image
 pip install -e ".[test]"
-# We recommend running IPFS, e.g. via https://docs.ipfs.io/install/ipfs-desktop/
 pytest
 # Notebook tests
 pytest --nbmake --nbmake-timeout=3000 examples/*ipynb
@@ -124,16 +123,8 @@ dataset_name = "cthead1"
 image = input_images[dataset_name]
 baseline_name = "2_4/XARRAY_COARSEN"
 multiscale = to_multiscale(image, [2, 4], method=Methods.XARRAY_COARSEN)
-verify_against_baseline(web3_data, dataset_name, baseline_name, multiscale)
+verify_against_baseline(test_data_dir, dataset_name, baseline_name, multiscale)
 ```
-
-First copy the current testing data to a staging directory, e.g.
-
-```console
-cp -a ./test/data/bafy* ./test/data/staging
-```
-
-And update the `web3_data_dir` path in the *pytest.ini* file from `test/data/bafy*` to `test/data/staging`.
 
 Add a `store_new_image` call in your test block:
 
@@ -150,16 +141,18 @@ verify_against_baseline(web3_data, dataset_name, baseline_name, multiscale)
 
 Run the tests to generate the output. Remove the `store_new_image` call.
 
-Once the new test data is present locally, upload the result to IPFS:
+Then, create a tarball of the current testing data
 
-```sh
-npm install -g @web3-storage/w3
-# Get an upload token from https://web3.storage
-w3 token
-w3 put ./test/data/staging --no-wrap --name multiscale-spatial-image-topic-name --hidden
+```console
+cd test/data
+tar cvf ../data.tar *
+gzip -9 ../data.tar
+python3 -c 'import pooch; print(pooch.file_hash("../data.tar.gz"))'
 ```
 
-The update the resulting root [Content Identifier (CID)](https://proto.school/anatomy-of-a-cid/01)in the *pytest.ini* `web3_data_dir` path.
+Update the `test_data_sha256` variable in the *test/test_multiscale_spatial_image.py* file.
+Upload the data to [web3.storage](https://web3.storage).
+nd update the `test_data_ipfs_cid` [Content Identifier (CID)](https://proto.school/anatomy-of-a-cid/01) variable, which is available in the web3.storage web page interface.
 
 
 [spatial-image]: https://github.com/spatial-image/spatial-image
