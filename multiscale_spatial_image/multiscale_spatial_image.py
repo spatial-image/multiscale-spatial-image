@@ -1,5 +1,4 @@
 from typing import Union, List
-from enum import Enum
 
 import xarray as xr
 from datatree import DataTree
@@ -118,12 +117,3 @@ class MultiscaleSpatialImage(DataTree):
         self.ds = self.ds.assign_attrs(**ngff_metadata)
 
         super().to_zarr(store, **kwargs)
-
-
-class Methods(Enum):
-    XARRAY_COARSEN = "xarray.DataArray.coarsen"
-    ITK_BIN_SHRINK = "itk.bin_shrink_image_filter"
-    ITK_GAUSSIAN = "itk.discrete_gaussian_image_filter"
-    ITK_LABEL_GAUSSIAN = "itk.discrete_gaussian_image_filter_label_interpolator"
-    DASK_IMAGE_GAUSSIAN = "dask_image.ndfilters.gaussian_filter"
-
