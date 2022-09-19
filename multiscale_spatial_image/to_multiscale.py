@@ -719,10 +719,7 @@ def itk_image_to_multiscale(
     elif anatomical_axes and image_dimension != 3:
         raise ValueError(f'Cannot use anatomical axes for input image of size {image_dimension}')
         
-    # TODO remove itk_helper when itk>5.3rc04 is available.
-    # itk_helper is a workaround for memory reference fix in itk>5.3rc04.
-    from itk_helper import xarray_from_image
-    image_da = xarray_from_image(image)
+    image_da = itk.xarray_from_image(image)
     image_da.name = name
 
     image_dims: Tuple[str, str, str, str] = ("x", "y", "z", "t") # ITK dims are in xyzt order
