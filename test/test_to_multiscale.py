@@ -1,4 +1,3 @@
-from platform import processor
 import pytest
 
 from pathlib import Path
