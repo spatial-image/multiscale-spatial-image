@@ -12,5 +12,5 @@ __all__ = [
 ]
 
 from .__about__ import __version__
-from .multiscale_spatial_image import MultiscaleSpatialImage, Methods
-from .to_multiscale import to_multiscale, itk_image_to_multiscale
+from .multiscale_spatial_image import MultiscaleSpatialImage
+from .to_multiscale import Methods, to_multiscale, itk_image_to_multiscale

@@ -1,4 +1,5 @@
 from typing import Union, Sequence, List, Optional, Dict, Mapping, Any, Tuple
+from enum import Enum
 
 from spatial_image import to_spatial_image, SpatialImage  # type: ignore
 
@@ -7,7 +8,15 @@ import numpy as np
 
 _spatial_dims = {"x", "y", "z"}
 
-from . import MultiscaleSpatialImage, Methods
+from . import MultiscaleSpatialImage 
+
+class Methods(Enum):
+    XARRAY_COARSEN = "xarray.DataArray.coarsen"
+    ITK_BIN_SHRINK = "itk.bin_shrink_image_filter"
+    ITK_GAUSSIAN = "itk.discrete_gaussian_image_filter"
+    ITK_LABEL_GAUSSIAN = "itk.discrete_gaussian_image_filter_label_interpolator"
+    DASK_IMAGE_GAUSSIAN = "dask_image.ndfilters.gaussian_filter"
+
 
 def to_multiscale(
     image: SpatialImage,

@@ -47,7 +47,7 @@ Issues = "https://github.com/spatial-image/multiscale-spatial-image"
 
 [project.optional-dependencies]
 test = [
-    "itk-filtering>=5.3rc4",
+    "itk-filtering>=5.3rc4.post2",
     "dask_image",
     "jsonschema",
     "pooch",
@@ -58,6 +58,13 @@ test = [
     "urllib3",
     "nbmake",
     "zarr",
+]
+
+itk = [
+    "itk-filtering>=5.3rc4.post2",
+]
+dask-image = [
+    "dask-image",
 ]
 
 [tool.black]
