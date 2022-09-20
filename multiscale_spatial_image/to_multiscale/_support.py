@@ -24,3 +24,24 @@ def _align_chunks(current_input, default_chunks, dim_factors):
         current_input = current_input.chunk(aligned_chunks)
 
     return current_input
+
+def _compute_sigma(input_spacings, shrink_factors) -> list:
+    '''Compute Gaussian kernel sigma values for resampling to isotropic spacing.
+    sigma = sqrt((isoSpacing^2 - inputSpacing[0]^2)/(2*sqrt(2*ln(2)))^2)
+    Ref https://discourse.itk.org/t/resampling-to-isotropic-signal-processing-theory/1403/16
+
+    input spacings: List
+        Input image physical spacings in xyzt order
+
+    shrink_factors: List
+        Shrink ratio along each axis in xyzt order
+
+    result: List
+        Standard deviation of Gaussian kernel along each axis in xyzt order
+    '''
+    assert len(input_spacings) == len(shrink_factors)
+    import math
+    output_spacings = [input_spacing * shrink for input_spacing, shrink in zip(input_spacings, shrink_factors)]
+    denominator = (2 * ((2 * math.log(2)) ** 0.5)) ** 2
+    return [((output_spacing ** 2 - input_spacing ** 2) / denominator) ** 0.5
+            for input_spacing, output_spacing in zip(input_spacings, output_spacings)]
