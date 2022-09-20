@@ -150,7 +150,7 @@ gzip -9 ../data.tar
 python3 -c 'import pooch; print(pooch.file_hash("../data.tar.gz"))'
 ```
 
-Update the `test_data_sha256` variable in the *test/test_multiscale_spatial_image.py* file.
+Update the `test_data_sha256` variable in the *test/_data.py* file.
 Upload the data to [web3.storage](https://web3.storage).
 nd update the `test_data_ipfs_cid` [Content Identifier (CID)](https://proto.school/anatomy-of-a-cid/01) variable, which is available in the web3.storage web page interface.
 
