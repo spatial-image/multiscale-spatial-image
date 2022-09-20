@@ -1,4 +1,4 @@
-from multiscale_spatial_image import Methods, to_multiscale, itk_image_to_multiscale
+from multiscale_spatial_image import Methods, to_multiscale
 
 from ._data import input_images, verify_against_baseline, store_new_image
 
