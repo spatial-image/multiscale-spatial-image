@@ -1,13 +1,13 @@
 from spatial_image import to_spatial_image
 from dask.array import map_blocks, map_overlap
 
-from ._support import _align_chunks
+from ._support import _align_chunks, _dim_scale_factors
 
-def _downsample_itk_bin_shrink(current_input, default_chunks, out_chunks, scale_factors, dim_scale_factors, data_objects, image):
+def _downsample_itk_bin_shrink(current_input, default_chunks, out_chunks, scale_factors, data_objects, image):
     import itk
 
     for factor_index, scale_factor in enumerate(scale_factors):
-        dim_factors = dim_scale_factors(scale_factor)
+        dim_factors = _dim_scale_factors(image.dims, scale_factor)
         current_input = _align_chunks(current_input, default_chunks, dim_factors)
 
         image_dims: Tuple[str, str, str, str] = ("x", "y", "z", "t")

@@ -1,3 +1,12 @@
+_spatial_dims = {"x", "y", "z"}
+
+def _dim_scale_factors(dims, scale_factor):
+    if isinstance(scale_factor, int):
+        dim = {dim: scale_factor for dim in _spatial_dims.intersection(dims)}
+    else:
+        dim = scale_factor
+    return dim
+
 
 def _align_chunks(current_input, default_chunks, dim_factors):
     block_0_shape = [c[0] for c in current_input.chunks]

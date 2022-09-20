@@ -6,13 +6,11 @@ from spatial_image import to_spatial_image, SpatialImage  # type: ignore
 from dask.array import map_blocks, map_overlap
 import numpy as np
 
-_spatial_dims = {"x", "y", "z"}
-
 from ..multiscale_spatial_image import MultiscaleSpatialImage 
 
 from ._xarray import _downsample_xarray_coarsen
 from ._itk import _downsample_itk_bin_shrink
-from ._support import _align_chunks
+from ._support import _align_chunks, _dim_scale_factors
 
 class Methods(Enum):
     XARRAY_COARSEN = "xarray.DataArray.coarsen"
@@ -82,13 +80,6 @@ def to_multiscale(
 
     if method is None:
         method = Methods.XARRAY_COARSEN
-
-    def dim_scale_factors(scale_factor):
-        if isinstance(scale_factor, int):
-            dim = {dim: scale_factor for dim in _spatial_dims.intersection(image.dims)}
-        else:
-            dim = scale_factor
-        return dim
 
     def get_block(xarray_image, block_index:int):
         '''Helper method for accessing an enumerated chunk from xarray input'''
@@ -257,9 +248,9 @@ def to_multiscale(
         return shrink_filter.GetOutput()
 
     if method is Methods.XARRAY_COARSEN:
-        data_objects = _downsample_xarray_coarsen(current_input, default_chunks, out_chunks, scale_factors, dim_scale_factors, data_objects, image.name)
+        data_objects = _downsample_xarray_coarsen(current_input, default_chunks, out_chunks, scale_factors, data_objects, image.name)
     elif method is Methods.ITK_BIN_SHRINK:
-        data_objects = _downsample_itk_bin_shrink(current_input, default_chunks, out_chunks, scale_factors, dim_scale_factors, data_objects, image)
+        data_objects = _downsample_itk_bin_shrink(current_input, default_chunks, out_chunks, scale_factors, data_objects, image)
     elif method is Methods.ITK_GAUSSIAN:
         import itk         
 
@@ -272,7 +263,7 @@ def to_multiscale(
         interpolator_name = 'LinearInterpolateImageFunction'
 
         for factor_index, scale_factor in enumerate(scale_factors):
-            dim_factors = dim_scale_factors(scale_factor)
+            dim_factors = _dim_scale_factors(image.dims, scale_factor)
             current_input = _align_chunks(current_input, default_chunks, dim_factors)
 
             image_dims: Tuple[str, str, str, str] = ("x", "y", "z", "t")
@@ -375,7 +366,7 @@ def to_multiscale(
         interpolator_name = 'LabelImageGaussianInterpolateImageFunction'
 
         for factor_index, scale_factor in enumerate(scale_factors):
-            dim_factors = dim_scale_factors(scale_factor)
+            dim_factors = _dim_scale_factors(image.dims, scale_factor)
             current_input = _align_chunks(current_input, default_chunks, dim_factors)
 
             image_dims: Tuple[str, str, str, str] = ("x", "y", "z", "t")
@@ -511,7 +502,7 @@ def to_multiscale(
             return truncate
 
         for factor_index, scale_factor in enumerate(scale_factors):
-            dim_factors = dim_scale_factors(scale_factor)
+            dim_factors = _dim_scale_factors(image.dims, scale_factor)
             current_input = _align_chunks(current_input, default_chunks, dim_factors)
 
             image_dims: Tuple[str, str, str, str] = ("x", "y", "z", "t")
