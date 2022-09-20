@@ -10,6 +10,9 @@ _spatial_dims = {"x", "y", "z"}
 
 from ..multiscale_spatial_image import MultiscaleSpatialImage 
 
+from ._xarray import _downsample_xarray_coarsen
+from ._support import _align_chunks
+
 class Methods(Enum):
     XARRAY_COARSEN = "xarray.DataArray.coarsen"
     ITK_BIN_SHRINK = "itk.bin_shrink_image_filter"
@@ -85,23 +88,6 @@ def to_multiscale(
         else:
             dim = scale_factor
         return dim
-
-    def align_chunks(current_input, dim_factors):
-        block_0_shape = [c[0] for c in current_input.chunks]
-
-        rechunk = False
-        aligned_chunks = {}
-        for dim, factor in dim_factors.items():
-            dim_index = current_input.dims.index(dim)
-            if block_0_shape[dim_index] % factor:
-                aligned_chunks[dim] = block_0_shape[dim_index] * factor
-                rechunk = True
-            else:
-                aligned_chunks[dim] = default_chunks[dim]
-        if rechunk:
-            current_input = current_input.chunk(aligned_chunks)
-
-        return current_input
 
     def get_block(xarray_image, block_index:int):
         '''Helper method for accessing an enumerated chunk from xarray input'''
@@ -270,28 +256,13 @@ def to_multiscale(
         return shrink_filter.GetOutput()
 
     if method is Methods.XARRAY_COARSEN:
-        for factor_index, scale_factor in enumerate(scale_factors):
-            dim_factors = dim_scale_factors(scale_factor)
-            current_input = align_chunks(current_input, dim_factors)
-
-            downscaled = (
-                current_input.coarsen(dim=dim_factors, boundary="trim", side="right")
-                .mean()
-                .astype(current_input.dtype)
-            )
-
-            downscaled = downscaled.chunk(out_chunks)
-
-            data_objects[f"scale{factor_index+1}"] = downscaled.to_dataset(
-                name=image.name, promote_attrs=True
-            )
-            current_input = downscaled
+        data_objects = _downsample_xarray_coarsen(current_input, default_chunks, out_chunks, scale_factors, dim_scale_factors, data_objects, image.name)
     elif method is Methods.ITK_BIN_SHRINK:
         import itk
 
         for factor_index, scale_factor in enumerate(scale_factors):
             dim_factors = dim_scale_factors(scale_factor)
-            current_input = align_chunks(current_input, dim_factors)
+            current_input = _align_chunks(current_input, default_chunks, dim_factors)
 
             image_dims: Tuple[str, str, str, str] = ("x", "y", "z", "t")
             shrink_factors = [dim_factors[sf] for sf in image_dims if sf in dim_factors]
@@ -374,7 +345,7 @@ def to_multiscale(
 
         for factor_index, scale_factor in enumerate(scale_factors):
             dim_factors = dim_scale_factors(scale_factor)
-            current_input = align_chunks(current_input, dim_factors)
+            current_input = _align_chunks(current_input, default_chunks, dim_factors)
 
             image_dims: Tuple[str, str, str, str] = ("x", "y", "z", "t")
             shrink_factors = [dim_factors[sf] for sf in image_dims if sf in dim_factors]
@@ -477,7 +448,7 @@ def to_multiscale(
 
         for factor_index, scale_factor in enumerate(scale_factors):
             dim_factors = dim_scale_factors(scale_factor)
-            current_input = align_chunks(current_input, dim_factors)
+            current_input = _align_chunks(current_input, default_chunks, dim_factors)
 
             image_dims: Tuple[str, str, str, str] = ("x", "y", "z", "t")
             shrink_factors = [dim_factors[sf] for sf in image_dims if sf in dim_factors]
@@ -613,7 +584,7 @@ def to_multiscale(
 
         for factor_index, scale_factor in enumerate(scale_factors):
             dim_factors = dim_scale_factors(scale_factor)
-            current_input = align_chunks(current_input, dim_factors)
+            current_input = _align_chunks(current_input, default_chunks, dim_factors)
 
             image_dims: Tuple[str, str, str, str] = ("x", "y", "z", "t")
             shrink_factors = [dim_factors[sf] for sf in image_dims if sf in dim_factors]
