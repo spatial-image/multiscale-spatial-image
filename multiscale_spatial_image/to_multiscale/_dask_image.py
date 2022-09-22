@@ -98,7 +98,7 @@ def _get_truncate(xarray_image, sigma_values, truncate_start=4.0) -> float:
 
     return truncate
 
-def _downsample_dask_image_gaussian(current_input, default_chunks, out_chunks, scale_factors, data_objects, image):
+def _downsample_dask_image(current_input, default_chunks, out_chunks, scale_factors, data_objects, image, label=False):
     import dask_image.ndfilters
     import dask_image.ndinterp
 
@@ -112,8 +112,6 @@ def _downsample_dask_image_gaussian(current_input, default_chunks, out_chunks, s
         # Compute/discover region splitting parameters
         input_spacing = _compute_input_spacing(current_input)
         input_spacing = [input_spacing[dim] for dim in image_dims if dim in dim_factors]
-        sigma_values = _compute_sigma(input_spacing, shrink_factors)
-        truncate = _get_truncate(current_input, np.flip(sigma_values))
 
         # Compute output shape and metadata
         output_shape = [int(image_len / shrink_factor)
@@ -121,22 +119,43 @@ def _downsample_dask_image_gaussian(current_input, default_chunks, out_chunks, s
         output_spacing = _compute_output_spacing(current_input, dim_factors)
         output_origin = _compute_output_origin(current_input, dim_factors)
 
-        blurred_array = dask_image.ndfilters.gaussian_filter(
-            image=current_input.data,
-            sigma=np.flip(sigma_values), # tzyx order
-            mode='nearest',
-            truncate=truncate
-        )
+        if label:
+            def largest_mode(arr):
+                values, counts = np.unique(arr, return_counts=True)
+                m = counts.argmax()
+                return values[m]
+            size = tuple(np.flip(shrink_factors))
+            blurred_array = dask_image.ndfilters.generic_filter(
+                image=current_input.data,
+                function=largest_mode,
+                size=size,
+                mode='nearest',
+            )
+        else:
+            sigma_values = _compute_sigma(input_spacing, shrink_factors)
+            truncate = _get_truncate(current_input, np.flip(sigma_values))
+
+            blurred_array = dask_image.ndfilters.gaussian_filter(
+                image=current_input.data,
+                sigma=np.flip(sigma_values), # tzyx order
+                mode='nearest',
+                truncate=truncate
+            )
 
         # Construct downsample parameters
         image_dimension = len(dim_factors)
         transform = np.eye(image_dimension)
         for dim, shrink_factor in enumerate(np.flip(shrink_factors)):
             transform[dim,dim] = shrink_factor
+        if label:
+            order = 0
+        else:
+            order = 1
 
         downscaled_array = dask_image.ndinterp.affine_transform(
             blurred_array,
             matrix=transform,
+            order=order,
             output_shape=output_shape # tzyx order
         ).compute()
         

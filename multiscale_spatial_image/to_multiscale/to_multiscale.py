@@ -10,7 +10,7 @@ from ..multiscale_spatial_image import MultiscaleSpatialImage
 
 from ._xarray import _downsample_xarray_coarsen
 from ._itk import _downsample_itk_bin_shrink, _downsample_itk_gaussian, _downsample_itk_label
-from ._dask_image import _downsample_dask_image_gaussian
+from ._dask_image import _downsample_dask_image
 
 class Methods(Enum):
     XARRAY_COARSEN = "xarray.DataArray.coarsen"
@@ -18,6 +18,7 @@ class Methods(Enum):
     ITK_GAUSSIAN = "itk.discrete_gaussian_image_filter"
     ITK_LABEL_GAUSSIAN = "itk.discrete_gaussian_image_filter_label_interpolator"
     DASK_IMAGE_GAUSSIAN = "dask_image.ndfilters.gaussian_filter"
+    DASK_IMAGE_MODE = "dask_image.ndfilters.generic_filter_mode"
 
 
 def to_multiscale(
@@ -90,7 +91,9 @@ def to_multiscale(
     elif method is Methods.ITK_LABEL_GAUSSIAN:
         data_objects = _downsample_itk_label(current_input, default_chunks, out_chunks, scale_factors, data_objects, image)
     elif method is Methods.DASK_IMAGE_GAUSSIAN:
-        data_objects = _downsample_dask_image_gaussian(current_input, default_chunks, out_chunks, scale_factors, data_objects, image)
+        data_objects = _downsample_dask_image(current_input, default_chunks, out_chunks, scale_factors, data_objects, image, label=False)
+    elif method is Methods.DASK_IMAGE_MODE:
+        data_objects = _downsample_dask_image(current_input, default_chunks, out_chunks, scale_factors, data_objects, image, label=True)
 
     multiscale = MultiscaleSpatialImage.from_dict(
         d=data_objects

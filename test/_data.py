@@ -59,7 +59,7 @@ def verify_against_baseline(dataset_name, baseline_name, multiscale):
     for scale in multiscale.children:
         xr.testing.assert_equal(dt[scale].ds, multiscale[scale].ds)
 
-def store_new_image(multiscale_image, dataset_name, baseline_name):
+def store_new_image(dataset_name, baseline_name, multiscale_image):
     '''Helper method for writing output results to disk
        for later upload as test baseline'''
     store = DirectoryStore(
