@@ -119,7 +119,7 @@ def _downsample_dask_image(current_input, default_chunks, out_chunks, scale_fact
         output_spacing = _compute_output_spacing(current_input, dim_factors)
         output_origin = _compute_output_origin(current_input, dim_factors)
 
-        if label:
+        if label == 'mode':
             def largest_mode(arr):
                 values, counts = np.unique(arr, return_counts=True)
                 m = counts.argmax()
@@ -131,6 +131,8 @@ def _downsample_dask_image(current_input, default_chunks, out_chunks, scale_fact
                 size=size,
                 mode='nearest',
             )
+        elif label == 'nearest':
+            blurred_array = current_input.data
         else:
             sigma_values = _compute_sigma(input_spacing, shrink_factors)
             truncate = _get_truncate(current_input, np.flip(sigma_values))
