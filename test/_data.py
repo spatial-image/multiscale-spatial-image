@@ -6,8 +6,8 @@ from zarr.storage import DirectoryStore
 import xarray as xr
 from datatree import open_datatree
 
-test_data_ipfs_cid = 'bafybeidr5be65a67njdaiw4cm27gjqpcmxlnhor7wak5hgm3jbhcnikt4y'
-test_data_sha256 = '95c5836b49c0f2a29b48a3865b3e5e23858d555c8dceebcd43f129052ee4525d'
+test_data_ipfs_cid = 'bafybeia73oin2pi7hdbfquvrad5jctvcn3vubk3slvh47fvwtwlvbdxqfm'
+test_data_sha256 = '29695d19bb6bac5b31b95bdbe451ff5535f202bdc9b43731f9a5fc8e0cfa1230'
 
 
 test_dir = Path(__file__).resolve().parent
@@ -59,7 +59,7 @@ def verify_against_baseline(dataset_name, baseline_name, multiscale):
     for scale in multiscale.children:
         xr.testing.assert_equal(dt[scale].ds, multiscale[scale].ds)
 
-def store_new_image(multiscale_image, dataset_name, baseline_name):
+def store_new_image(dataset_name, baseline_name, multiscale_image):
     '''Helper method for writing output results to disk
        for later upload as test baseline'''
     store = DirectoryStore(

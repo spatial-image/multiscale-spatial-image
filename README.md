@@ -134,9 +134,9 @@ image = input_images[dataset_name]
 baseline_name = "2_4/XARRAY_COARSEN"
 multiscale = to_multiscale(image, [2, 4], method=Methods.XARRAY_COARSEN)
 
-store_new_image(web3_data, multiscale, dataset_name, baseline_name)
+store_new_image(dataset_name, baseline_name, multiscale)
 
-verify_against_baseline(web3_data, dataset_name, baseline_name, multiscale)
+verify_against_baseline(dataset_name, baseline_name, multiscale)
 ```
 
 Run the tests to generate the output. Remove the `store_new_image` call.
