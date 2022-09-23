@@ -53,7 +53,8 @@ def itk_image_to_multiscale(
     scale = {image_dims[i]: s for (i, s) in enumerate(image.GetSpacing())}
     translation = {image_dims[i]: s for (i, s) in enumerate(image.GetOrigin())}
 
-    spatial_image = to_spatial_image(image_da,
+    spatial_image = to_spatial_image(image_da.data,
+                                     dims=image_da.dims,
                                      scale=scale,
                                      translation=translation,
                                      name=name,

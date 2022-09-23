@@ -48,19 +48,18 @@ def _compute_output_origin(input_image, dim_factors):
         Example {'x': 0.5, 'y': 1.0}
     '''
     import math
-    image_dims: Tuple[str, str, str, str] = ("x", "y", "z", "t")
         
     input_spacing = _compute_input_spacing(input_image)
     input_origin = {dim: float(input_image.coords[dim][0])
-                      for dim in image_dims if dim in dim_factors}
+                      for dim in input_image.dims if dim in dim_factors}
 
     # Index in input image space corresponding to offset after shrink
     input_index = {dim: 0.5 * (dim_factors[dim] - 1)
-                              for dim in image_dims if dim in dim_factors}
+                              for dim in input_image.dims if dim in dim_factors}
     # Translate input index coordinate to offset in physical space
     # NOTE: This method fails to account for direction matrix
     return {dim: input_index[dim] * input_spacing[dim] + input_origin[dim]
-                      for dim in image_dims if dim in dim_factors}
+                      for dim in input_image.dims if dim in dim_factors}
 
 def _get_truncate(xarray_image, sigma_values, truncate_start=4.0) -> float:
     '''Discover truncate parameter yielding a viable kernel width
@@ -106,16 +105,19 @@ def _downsample_dask_image(current_input, default_chunks, out_chunks, scale_fact
         dim_factors = _dim_scale_factors(image.dims, scale_factor)
         current_input = _align_chunks(current_input, default_chunks, dim_factors)
 
-        image_dims: Tuple[str, str, str, str] = ("x", "y", "z", "t")
-        shrink_factors = [dim_factors[sf] for sf in image_dims if sf in dim_factors]
+        shrink_factors = []
+        for dim in image.dims:
+            if dim in dim_factors:
+                shrink_factors.append(dim_factors[dim])
+            else:
+                shrink_factors.append(1)
 
         # Compute/discover region splitting parameters
         input_spacing = _compute_input_spacing(current_input)
-        input_spacing = [input_spacing[dim] for dim in image_dims if dim in dim_factors]
 
         # Compute output shape and metadata
         output_shape = [int(image_len / shrink_factor)
-            for image_len, shrink_factor in zip(current_input.shape, np.flip(shrink_factors))]
+            for image_len, shrink_factor in zip(current_input.shape, shrink_factors)]
         output_spacing = _compute_output_spacing(current_input, dim_factors)
         output_origin = _compute_output_origin(current_input, dim_factors)
 
@@ -124,7 +126,7 @@ def _downsample_dask_image(current_input, default_chunks, out_chunks, scale_fact
                 values, counts = np.unique(arr, return_counts=True)
                 m = counts.argmax()
                 return values[m]
-            size = tuple(np.flip(shrink_factors))
+            size = tuple(shrink_factors)
             blurred_array = dask_image.ndfilters.generic_filter(
                 image=current_input.data,
                 function=largest_mode,
@@ -134,12 +136,13 @@ def _downsample_dask_image(current_input, default_chunks, out_chunks, scale_fact
         elif label == 'nearest':
             blurred_array = current_input.data
         else:
-            sigma_values = _compute_sigma(input_spacing, shrink_factors)
-            truncate = _get_truncate(current_input, np.flip(sigma_values))
+            input_spacing_list = [input_spacing[dim] for dim in image.dims]
+            sigma_values = _compute_sigma(input_spacing_list, shrink_factors)
+            truncate = _get_truncate(current_input, sigma_values)
 
             blurred_array = dask_image.ndfilters.gaussian_filter(
                 image=current_input.data,
-                sigma=np.flip(sigma_values), # tzyx order
+                sigma=sigma_values, # tzyx order
                 mode='nearest',
                 truncate=truncate
             )
@@ -147,7 +150,7 @@ def _downsample_dask_image(current_input, default_chunks, out_chunks, scale_fact
         # Construct downsample parameters
         image_dimension = len(dim_factors)
         transform = np.eye(image_dimension)
-        for dim, shrink_factor in enumerate(np.flip(shrink_factors)):
+        for dim, shrink_factor in enumerate(shrink_factors):
             transform[dim,dim] = shrink_factor
         if label:
             order = 0
