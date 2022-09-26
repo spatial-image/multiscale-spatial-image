@@ -124,4 +124,4 @@ class MultiscaleSpatialImage:
         ngff_metadata = {"multiscales": multiscales, "multiscaleSpatialImageVersion": 1}
         self._dt.ds = self._dt.ds.assign_attrs(**ngff_metadata)
 
-        self._dt.to_zarr(store, **kwargs)
+        self._dt.to_zarr(store, mode=mode, **kwargs)
