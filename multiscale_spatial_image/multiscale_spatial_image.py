@@ -4,6 +4,9 @@ import xarray as xr
 from datatree import DataTree
 from datatree.treenode import TreeNode
 import numpy as np
+from collections.abc import MutableMapping
+from pathlib import Path
+from zarr.storage import BaseStore
 
 
 class MultiscaleSpatialImage(DataTree):
@@ -31,13 +34,13 @@ class MultiscaleSpatialImage(DataTree):
         """DataTree with a root name of *multiscales*."""
         super().__init__(data=data, name=name, parent=parent, children=children)
 
-    def to_zarr(self, store, mode: str = "w", encoding=None, **kwargs):
+    def to_zarr(self, store: Union[MutableMapping, str, Path, BaseStore], mode: str = "w", encoding=None, **kwargs):
         """
         Write multi-scale spatial image contents to a Zarr store.
 
         Metadata is added according the OME-NGFF standard.
 
-        store : MutableMapping, str or Path, optional
+        store : MutableMapping, str or Path, or zarr.storage.BaseStore
             Store or path to directory in file system
         mode : {{"w", "w-", "a", "r+", None}, default: "w"
             Persistence mode: “w” means create (overwrite if exists); “w-” means create (fail if exists);
