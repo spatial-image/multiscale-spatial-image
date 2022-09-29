@@ -6,8 +6,8 @@ from zarr.storage import DirectoryStore
 import xarray as xr
 from datatree import open_datatree
 
-test_data_ipfs_cid = 'bafybeia73oin2pi7hdbfquvrad5jctvcn3vubk3slvh47fvwtwlvbdxqfm'
-test_data_sha256 = '29695d19bb6bac5b31b95bdbe451ff5535f202bdc9b43731f9a5fc8e0cfa1230'
+test_data_ipfs_cid = 'bafybeiaskr5fxg6rbcwlxl6ibzqhubdleacenrpbnymc6oblwoi7ceqzta'
+test_data_sha256 = '507dd779cba007c46ea68a5fe8865cabd5d8a7e00816470faae9195d1f1c3cd1'
 
 
 test_dir = Path(__file__).resolve().parent
@@ -66,4 +66,4 @@ def store_new_image(dataset_name, baseline_name, multiscale_image):
     store = DirectoryStore(
         str(path), dimension_separator="/",
     )
-    multiscale_image.to_zarr(store)
+    multiscale_image.to_zarr(store, mode="w")

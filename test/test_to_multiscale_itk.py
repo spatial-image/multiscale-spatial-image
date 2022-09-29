@@ -21,7 +21,7 @@ def test_isotropic_scale_factors(input_images):
     baseline_name = "2_3_4/ITK_BIN_SHRINK"
     verify_against_baseline(dataset_name, baseline_name, multiscale)
 
-    
+
 def test_gaussian_isotropic_scale_factors(input_images):
     dataset_name = "cthead1"
     image = input_images[dataset_name]
@@ -74,7 +74,7 @@ def test_anisotropic_scale_factors(input_images):
     multiscale = to_multiscale(image, scale_factors, method=Methods.ITK_BIN_SHRINK)
     baseline_name = "x3y2z4_x2y2z2_x1y2z1/ITK_BIN_SHRINK"
     verify_against_baseline(dataset_name, baseline_name, multiscale)
-    
+
 
 def test_gaussian_anisotropic_scale_factors(input_images):
     dataset_name = "cthead1"
@@ -138,7 +138,7 @@ def test_from_itk(input_images):
         raise Exception('Failed to catch expected exception for 2D image requesting anatomical axes')
     except ValueError:
         pass # caught expected exception
-    
+
     # Test 3D with ITK default metadata
     dataset_name = "small_head"
     image = itk.image_from_xarray(input_images[dataset_name])
@@ -159,4 +159,3 @@ def test_from_itk(input_images):
     multiscale = itk_image_to_multiscale(image, scale_factors=scale_factors, anatomical_axes=True, axis_units=axis_units, name=name)
     baseline_name = "4_2/from_itk_anatomical"
     verify_against_baseline(dataset_name, baseline_name, multiscale)
-    
