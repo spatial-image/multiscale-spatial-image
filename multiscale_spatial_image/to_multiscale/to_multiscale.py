@@ -75,14 +75,17 @@ def to_multiscale(
         out_chunks = default_chunks
     
     # check for valid scale factors
-    current_shape = np.array(
-        [s for (s, d) in zip(image.shape, image.dims) if d != "c"], dtype=np.float_
-    )
+    current_shape = {d:s for (s, d) in zip(image.shape, image.dims) if d != "c"}
+    print(current_shape)
 
-    for sf in scale_factors:
-        current_shape /= float(sf)
-        if current_shape.min() < 1:
-            raise ValueError(f"Scale factor {sf} is incompatible with image shape {image.shape}.")
+    for scale_factor in scale_factors:
+        if isinstance(scale_factor, dict):
+            current_shape = {k: (current_shape[k] / s) for (k, s) in scale_factor.items()}
+        elif isinstance(scale_factor, int):
+            current_shape = {k: (s / scale_factor) for (k, s) in current_shape.items()}
+        for k,v in current_shape.items():
+            if v < 1:
+                raise ValueError(f"Scale factor {scale_factor} is incompatible with image shape {image.shape} along dimension {k}.")
 
     current_input = image.chunk(out_chunks)
     # https://github.com/pydata/xarray/issues/5219

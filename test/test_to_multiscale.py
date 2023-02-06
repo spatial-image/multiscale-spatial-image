@@ -17,3 +17,4 @@ def test_base_scale(input_images):
 
     with pytest.raises(ValueError):
         to_multiscale(image, scale_factors=[500])
+        to_multiscale(image, scale_factors=[{"x": 10}, {"x": 500, "y": 10}])
