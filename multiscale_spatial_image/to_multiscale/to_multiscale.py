@@ -86,7 +86,6 @@ def to_multiscale(
     
     # check for valid scale factors
     current_shape = {d:s for (s, d) in zip(image.shape, image.dims) if d != "c"}
-    print(current_shape)
 
     for scale_factor in scale_factors:
         if isinstance(scale_factor, dict):
