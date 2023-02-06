@@ -11,6 +11,7 @@ from ..multiscale_spatial_image import MultiscaleSpatialImage
 from ._xarray import _downsample_xarray_coarsen
 from ._itk import _downsample_itk_bin_shrink, _downsample_itk_gaussian, _downsample_itk_label
 from ._dask_image import _downsample_dask_image
+from .._docs import inject_docs
 
 class Methods(Enum):
     XARRAY_COARSEN = "xarray_coarsen"
@@ -21,7 +22,7 @@ class Methods(Enum):
     DASK_IMAGE_MODE = "dask_image_mode"
     DASK_IMAGE_NEAREST = "dask_image_nearest"
 
-
+@inject_docs(m=Methods)
 def to_multiscale(
     image: SpatialImage,
     scale_factors: Sequence[Union[Dict[str, int], int]],
@@ -35,7 +36,8 @@ def to_multiscale(
         ]
     ] = None,
 ) -> MultiscaleSpatialImage:
-    """Generate a multiscale representation of a spatial image.
+    """\
+    Generate a multiscale representation of a spatial image.
 
     Parameters
     ----------
@@ -46,10 +48,18 @@ def to_multiscale(
     scale_factors : int per scale or dict of spatial dimension int's per scale
         Integer scale factors to apply uniformly across all spatial dimension or
         along individual spatial dimensions.
-        Examples: [2, 2] or [{'x': 2, 'y': 4 }, {'x': 5, 'y': 10}]
+        Examples: [2, 2] or [{{'x': 2, 'y': 4 }}, {{'x': 5, 'y': 10}}]
 
     method : multiscale_spatial_image.Methods, optional
-        Method to reduce the input image.
+        Method to reduce the input image. Available methods are the following:
+
+        - `{m.XARRAY_COARSEN.value!r}` - Use xarray coarsen to downsample the image.
+        - `{m.ITK_BIN_SHRINK.value!r}` - Use ITK BinShrinkImageFilter to downsample the image.
+        - `{m.ITK_GAUSSIAN.value!r}` - Use ITK GaussianImageFilter to downsample the image.
+        - `{m.ITK_LABEL_GAUSSIAN.value!r}` - Use ITK LabelGaussianImageFilter to downsample the image.
+        - `{m.DASK_IMAGE_GAUSSIAN.value!r}` - Use dask-image gaussian_filter to downsample the image.
+        - `{m.DASK_IMAGE_MODE.value!r}` - Use dask-image mode_filter to downsample the image.
+        - `{m.DASK_IMAGE_NEAREST.value!r}` - Use dask-image zoom to downsample the image.
 
     chunks : xarray Dask array chunking specification, optional
         Specify the chunking used in each output scale.
