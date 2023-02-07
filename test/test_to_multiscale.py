@@ -1,6 +1,6 @@
 import xarray as xr
 import pytest
-from multiscale_spatial_image import Methods, to_multiscale
+from multiscale_spatial_image import to_multiscale
 
 from ._data import input_images
 
