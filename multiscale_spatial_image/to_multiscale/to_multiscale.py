@@ -83,6 +83,18 @@ def to_multiscale(
     out_chunks = chunks
     if out_chunks is None:
         out_chunks = default_chunks
+    
+    # check for valid scale factors
+    current_shape = {d:s for (d, s) in zip(image.dims, image.shape) if d not in {"t", "c"}}
+
+    for scale_factor in scale_factors:
+        if isinstance(scale_factor, dict):
+            current_shape = {k: (current_shape[k] / s) for (k, s) in scale_factor.items()}
+        elif isinstance(scale_factor, int):
+            current_shape = {k: (s / scale_factor) for (k, s) in current_shape.items()}
+        for k,v in current_shape.items():
+            if v < 1:
+                raise ValueError(f"Scale factor {scale_factor} is incompatible with image shape {image.shape} along dimension `{k}`.")
 
     current_input = image.chunk(out_chunks)
     # https://github.com/pydata/xarray/issues/5219
