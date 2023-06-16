@@ -119,4 +119,4 @@ class MultiscaleSpatialImage(DataTree):
         ngff_metadata = {"multiscales": multiscales, "multiscaleSpatialImageVersion": 1}
         self.ds = self.ds.assign_attrs(**ngff_metadata)
 
-        super().to_zarr(store, **kwargs)
+        super().to_zarr(store, mode=mode, **kwargs)
