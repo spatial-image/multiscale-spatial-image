@@ -59,11 +59,11 @@ class MultiscaleSpatialImage:
         """
 
         multiscales = []
-        scale0 = self[self.groups[1]]
+        scale0 = self._obj[self._obj.groups[1]]
         for name in scale0.ds.data_vars.keys():
             ngff_datasets = []
-            for child in self.children:
-                image = self[child].ds
+            for child in self._obj.children:
+                image = self._obj[child].ds
                 scale_transform = []
                 translate_transform = []
                 for dim in image.dims:
@@ -84,7 +84,7 @@ class MultiscaleSpatialImage:
 
                 ngff_datasets.append(
                     {
-                        "path": f"{self[child].name}/{name}",
+                        "path": f"{self._obj[child].name}/{name}",
                         "coordinateTransformations": [
                             {
                                 "type": "scale",
@@ -122,6 +122,6 @@ class MultiscaleSpatialImage:
 
         # NGFF v0.4 metadata
         ngff_metadata = {"multiscales": multiscales, "multiscaleSpatialImageVersion": 1}
-        self.ds = self.ds.assign_attrs(**ngff_metadata)
+        self._obj.ds = self._obj.ds.assign_attrs(**ngff_metadata)
 
-        super().to_zarr(store, **kwargs)
+        self._obj.to_zarr(store, **kwargs)
