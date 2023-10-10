@@ -7,9 +7,12 @@ import numpy as np
 from collections.abc import MutableMapping
 from pathlib import Path
 from zarr.storage import BaseStore
+import xarray as xr
+from datatree import register_datatree_accessor
 
 
-class MultiscaleSpatialImage(DataTree):
+@register_datatree_accessor("msi")
+class MultiscaleSpatialImage:
     """A multi-scale representation of a spatial image.
 
     This is an xarray DataTree, with content compatible with the Open Microscopy Environment-
@@ -24,17 +27,16 @@ class MultiscaleSpatialImage(DataTree):
       scale2
     """
 
-    def __init__(
-        self,
-        name: str = "multiscales",
-        data: Union[xr.Dataset, xr.DataArray] = None,
-        parent: TreeNode = None,
-        children: List[TreeNode] = None,
-    ):
-        """DataTree with a root name of *multiscales*."""
-        super().__init__(data=data, name=name, parent=parent, children=children)
+    def __init__(self, xarray_obj: DataTree):
+        self._obj = xarray_obj
 
-    def to_zarr(self, store: Union[MutableMapping, str, Path, BaseStore], mode: str = "w", encoding=None, **kwargs):
+    def to_zarr(
+        self,
+        store: Union[MutableMapping, str, Path, BaseStore],
+        mode: str = "w",
+        encoding=None,
+        **kwargs,
+    ):
         """
         Write multi-scale spatial image contents to a Zarr store.
 
@@ -59,20 +61,23 @@ class MultiscaleSpatialImage(DataTree):
         multiscales = []
         scale0 = self[self.groups[1]]
         for name in scale0.ds.data_vars.keys():
-
             ngff_datasets = []
             for child in self.children:
                 image = self[child].ds
                 scale_transform = []
                 translate_transform = []
                 for dim in image.dims:
-                    if len(image.coords[dim]) > 1 and np.issubdtype(image.coords[dim].dtype, np.number):
+                    if len(image.coords[dim]) > 1 and np.issubdtype(
+                        image.coords[dim].dtype, np.number
+                    ):
                         scale_transform.append(
                             float(image.coords[dim][1] - image.coords[dim][0])
                         )
                     else:
                         scale_transform.append(1.0)
-                    if len(image.coords[dim]) > 0 and np.issubdtype(image.coords[dim].dtype, np.number):
+                    if len(image.coords[dim]) > 0 and np.issubdtype(
+                        image.coords[dim].dtype, np.number
+                    ):
                         translate_transform.append(float(image.coords[dim][0]))
                     else:
                         translate_transform.append(0.0)
