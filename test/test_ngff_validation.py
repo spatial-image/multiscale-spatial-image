@@ -2,11 +2,12 @@ import json
 from typing import Dict
 import urllib3
 
-from jsonschema import RefResolver, Draft202012Validator
-from jsonschema.exceptions import ValidationError
+from referencing import Registry, Resource
+from referencing.jsonschema import DRAFT202012
+from jsonschema import Draft202012Validator
 
-from jsonschema import validate, RefResolver
 from datatree import DataTree
+
 from multiscale_spatial_image import to_multiscale, MultiscaleSpatialImage
 from spatial_image import to_spatial_image
 import numpy as np
@@ -14,11 +15,13 @@ import zarr
 
 http = urllib3.PoolManager()
 
+ngff_uri = "https://ngff.openmicroscopy.org"
+
 def load_schema(version: str = "0.4", strict: bool = False) -> Dict:
     strict_str = ""
     if strict:
         strict_str = "strict_"
-    response = http.request("GET", f"https://ngff.openmicroscopy.org/{version}/schemas/{strict_str}image.schema")
+    response = http.request("GET", f"{ngff_uri}/{version}/schemas/{strict_str}image.schema")
     schema = json.loads(response.data.decode())
     return schema
 
@@ -32,13 +35,10 @@ def check_valid_ngff(multiscale: DataTree):
 
     image_schema = load_schema(version="0.4", strict=False)
     strict_image_schema = load_schema(version="0.4", strict=True)
-    schema_store = {
-        image_schema["$id"]: image_schema,
-        strict_image_schema["$id"]: strict_image_schema,
-    }
-    resolver = RefResolver.from_schema(image_schema, store=schema_store)
-    validator = Draft202012Validator(image_schema, resolver=resolver)
-    strict_validator = Draft202012Validator(strict_image_schema, resolver=resolver)
+    registry = Registry().with_resource(ngff_uri, resource=Resource.from_contents(image_schema))
+    validator = Draft202012Validator(image_schema, registry=registry)
+    # registry_strict = Registry().with_resource(ngff_uri, resource=Resource.from_contents(strict_image_schema))
+    # strict_validator = Draft202012Validator(strict_schema, registry=registry_strict)
 
     validator.validate(ngff)
     # Need to add NGFF metadata property
