@@ -28,7 +28,7 @@ class MultiscaleSpatialImage:
     """
 
     def __init__(self, xarray_obj: DataTree):
-        self._obj = xarray_obj
+        self._dt = xarray_obj
 
     def to_zarr(
         self,
@@ -59,11 +59,11 @@ class MultiscaleSpatialImage:
         """
 
         multiscales = []
-        scale0 = self._obj[self._obj.groups[1]]
+        scale0 = self._dt[self._dt.groups[1]]
         for name in scale0.ds.data_vars.keys():
             ngff_datasets = []
-            for child in self._obj.children:
-                image = self._obj[child].ds
+            for child in self._dt.children:
+                image = self._dt[child].ds
                 scale_transform = []
                 translate_transform = []
                 for dim in image.dims:
@@ -84,7 +84,7 @@ class MultiscaleSpatialImage:
 
                 ngff_datasets.append(
                     {
-                        "path": f"{self._obj[child].name}/{name}",
+                        "path": f"{self._dt[child].name}/{name}",
                         "coordinateTransformations": [
                             {
                                 "type": "scale",
@@ -122,6 +122,6 @@ class MultiscaleSpatialImage:
 
         # NGFF v0.4 metadata
         ngff_metadata = {"multiscales": multiscales, "multiscaleSpatialImageVersion": 1}
-        self._obj.ds = self._obj.ds.assign_attrs(**ngff_metadata)
+        self._dt.ds = self._dt.ds.assign_attrs(**ngff_metadata)
 
-        self._obj.to_zarr(store, **kwargs)
+        self._dt.to_zarr(store, **kwargs)
