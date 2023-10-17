@@ -6,6 +6,8 @@ from referencing import Registry, Resource
 from referencing.jsonschema import DRAFT202012
 from jsonschema import Draft202012Validator
 
+from datatree import DataTree
+
 from multiscale_spatial_image import to_multiscale, MultiscaleSpatialImage
 from spatial_image import to_spatial_image
 import numpy as np
@@ -23,9 +25,10 @@ def load_schema(version: str = "0.4", strict: bool = False) -> Dict:
     schema = json.loads(response.data.decode())
     return schema
 
-def check_valid_ngff(multiscale: MultiscaleSpatialImage):
+def check_valid_ngff(multiscale: DataTree):
     store = zarr.storage.MemoryStore(dimension_separator="/")
-    multiscale.to_zarr(store, compute=True)
+    assert isinstance(multiscale.msi, MultiscaleSpatialImage)
+    multiscale.msi.to_zarr(store, compute=True)
     zarr.convenience.consolidate_metadata(store)
     metadata = json.loads(store.get(".zmetadata"))["metadata"]
     ngff = metadata[".zattrs"]

@@ -6,7 +6,7 @@ from spatial_image import to_spatial_image, SpatialImage  # type: ignore
 from dask.array import map_blocks, map_overlap
 import numpy as np
 
-from ..multiscale_spatial_image import MultiscaleSpatialImage 
+from datatree import DataTree
 
 from ._xarray import _downsample_xarray_coarsen
 from ._itk import _downsample_itk_bin_shrink, _downsample_itk_gaussian, _downsample_itk_label
@@ -35,7 +35,7 @@ def to_multiscale(
             Mapping[Any, Union[None, int, Tuple[int, ...]]],
         ]
     ] = None,
-) -> MultiscaleSpatialImage:
+) -> DataTree:
     """\
     Generate a multiscale representation of a spatial image.
 
@@ -67,7 +67,7 @@ def to_multiscale(
     Returns
     -------
 
-    result : MultiscaleSpatialImage
+    result : DataTree
         Multiscale representation. An xarray DataTree where each node is a SpatialImage Dataset
         named by the integer scale.  Increasing scales are downscaled versions of the input image.
     """
@@ -120,7 +120,7 @@ def to_multiscale(
     elif method is Methods.DASK_IMAGE_MODE:
         data_objects = _downsample_dask_image(current_input, default_chunks, out_chunks, scale_factors, data_objects, image, label='mode')
 
-    multiscale = MultiscaleSpatialImage.from_dict(
+    multiscale = DataTree.from_dict(
         d=data_objects
     )
 

@@ -3,7 +3,7 @@ from typing import Union, Sequence, List, Optional, Dict, Mapping, Any, Tuple
 from spatial_image import to_spatial_image
 
 from .to_multiscale import to_multiscale, Methods
-from ..multiscale_spatial_image import MultiscaleSpatialImage 
+from datatree import DataTree
 
 def itk_image_to_multiscale(
     image,
@@ -20,7 +20,7 @@ def itk_image_to_multiscale(
             Tuple[Tuple[int, ...], ...],
             Mapping[Any, Union[None, int, Tuple[int, ...]]],
         ]
-    ] = None) -> MultiscaleSpatialImage:
+    ] = None) -> DataTree:
 
     import itk
     import numpy as np
