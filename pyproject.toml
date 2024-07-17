@@ -72,3 +72,12 @@ line-length = 88
 
 [tool.hatch.version]
 path = "multiscale_spatial_image/__about__.py"
+
+[tool.pixi.project]
+channels = ["conda-forge"]
+platforms = ["win-64", "linux-64", "osx-64", "osx-arm64"]
+
+[tool.pixi.pypi-dependencies]
+pixi_py = { path = ".", editable = true }
+
+[tool.pixi.tasks]
