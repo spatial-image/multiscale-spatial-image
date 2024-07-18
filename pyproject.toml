@@ -81,3 +81,10 @@ platforms = ["win-64", "linux-64", "osx-64", "osx-arm64"]
 pixi_py = { path = ".", editable = true }
 
 [tool.pixi.tasks]
+
+[tool.pixi.environments]
+default = { solve-group = "default" }
+test = { features = ["test", "dask-image", "itk"], solve-group = "default" }
+
+[tool.pixi.feature.test.tasks]
+test = "pytest"
