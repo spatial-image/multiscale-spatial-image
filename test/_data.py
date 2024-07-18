@@ -62,7 +62,8 @@ def verify_against_baseline(dataset_name, baseline_name, multiscale):
 def store_new_image(dataset_name, baseline_name, multiscale_image):
     '''Helper method for writing output results to disk
        for later upload as test baseline'''
+    path = test_data_dir / f"baseline/{dataset_name}/{baseline_name}"
     store = DirectoryStore(
-        test_data_dir / f"baseline/{dataset_name}/{baseline_name}", dimension_separator="/",
+        str(path), dimension_separator="/",
     )
     multiscale_image.to_zarr(store)
