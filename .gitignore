@@ -8,6 +8,7 @@ examples/chelsea.zarr/
 .ipynb_checkpoints
 examples/sub-I46_ses-SPIM_sample-BrocaAreaS01_stain-GAD67_chunk-00_SPIM*
 examples/dask-worker-space/
+.pixi/
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
