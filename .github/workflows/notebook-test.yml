@@ -9,19 +9,8 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - uses: actions/setup-python@v5
-        with:
-          python-version: '3.9'
-      - uses: actions/setup-java@v3
-        with:
-          java-version: '8'
-          distribution: 'zulu'
-      - name: Install test dependencies
-        run: |
-          python3 -m pip install --upgrade pip
-          python3 -m pip install -e ".[test]"
-          python3 -m pip install pyimagej
-          python3 -c "import imagej; ij = imagej.init('2.5.0'); print(ij.getVersion())"
+      - uses: prefix-dev/setup-pixi@v0.8.1
+
       - name: Test notebooks
         run: |
-          pytest --nbmake --nbmake-timeout=3000  examples/*ipynb
+          pixi run test-notebooks
