@@ -107,8 +107,9 @@ jupyterlab = ">=4.2.4,<4.3"
 python = "3.9.*"
 
 [tool.pixi.feature.notebooks.tasks]
-init-imagej = { cmd = "python3 -c \"import imagej; ij = imagej.init('2.5.0'); print(ij.getVersion())\"", description = "Initialize the python imagej installation" }
+init-imagej = { cmd = "python3 -c \"import imagej; ij = imagej.init('2.15.0'); print(ij.getVersion())\"", description = "Initialize the python imagej installation" }
 test-notebooks = { cmd = "pytest --nbmake --nbmake-timeout=3000 examples/ConvertImageioImageResource.ipynb examples/ConvertITKImage.ipynb examples/ConvertPyImageJDataset.ipynb examples/ConvertTiffFile.ipynb examples/HelloMultiscaleSpatialImageWorld.ipynb", depends-on = ["init-imagej"], description = "Test the notebooks" }
+dev-notebooks = { cmd = "jupyter lab examples", description = "Start Jupyter Lab" }
 
 [tool.pixi.feature.data.dependencies]
 python = ">=3.9.19,<4"
