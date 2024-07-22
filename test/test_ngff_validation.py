@@ -3,7 +3,6 @@ from typing import Dict
 import urllib3
 
 from referencing import Registry, Resource
-from referencing.jsonschema import DRAFT202012
 from jsonschema import Draft202012Validator
 
 from datatree import DataTree
@@ -17,13 +16,17 @@ http = urllib3.PoolManager()
 
 ngff_uri = "https://ngff.openmicroscopy.org"
 
+
 def load_schema(version: str = "0.4", strict: bool = False) -> Dict:
     strict_str = ""
     if strict:
         strict_str = "strict_"
-    response = http.request("GET", f"{ngff_uri}/{version}/schemas/{strict_str}image.schema")
+    response = http.request(
+        "GET", f"{ngff_uri}/{version}/schemas/{strict_str}image.schema"
+    )
     schema = json.loads(response.data.decode())
     return schema
+
 
 def check_valid_ngff(multiscale: DataTree):
     store = zarr.storage.MemoryStore(dimension_separator="/")
@@ -34,8 +37,10 @@ def check_valid_ngff(multiscale: DataTree):
     ngff = metadata[".zattrs"]
 
     image_schema = load_schema(version="0.4", strict=False)
-    strict_image_schema = load_schema(version="0.4", strict=True)
-    registry = Registry().with_resource(ngff_uri, resource=Resource.from_contents(image_schema))
+    # strict_image_schema = load_schema(version="0.4", strict=True)
+    registry = Registry().with_resource(
+        ngff_uri, resource=Resource.from_contents(image_schema)
+    )
     validator = Draft202012Validator(image_schema, registry=registry)
     # registry_strict = Registry().with_resource(ngff_uri, resource=Resource.from_contents(strict_image_schema))
     # strict_validator = Draft202012Validator(strict_schema, registry=registry_strict)

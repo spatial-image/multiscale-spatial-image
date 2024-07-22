@@ -1,17 +1,20 @@
-from typing import Union, Sequence, List, Optional, Dict, Mapping, Any, Tuple
+from typing import Union, Sequence, Optional, Dict, Mapping, Any, Tuple
 from enum import Enum
 
-from spatial_image import to_spatial_image, SpatialImage  # type: ignore
+from spatial_image import SpatialImage  # type: ignore
 
-from dask.array import map_blocks, map_overlap
-import numpy as np
 
 from datatree import DataTree
 
 from ._xarray import _downsample_xarray_coarsen
-from ._itk import _downsample_itk_bin_shrink, _downsample_itk_gaussian, _downsample_itk_label
+from ._itk import (
+    _downsample_itk_bin_shrink,
+    _downsample_itk_gaussian,
+    _downsample_itk_label,
+)
 from ._dask_image import _downsample_dask_image
 from .._docs import inject_docs
+
 
 class Methods(Enum):
     XARRAY_COARSEN = "xarray_coarsen"
@@ -21,6 +24,7 @@ class Methods(Enum):
     DASK_IMAGE_GAUSSIAN = "dask_image_gaussian"
     DASK_IMAGE_MODE = "dask_image_mode"
     DASK_IMAGE_NEAREST = "dask_image_nearest"
+
 
 @inject_docs(m=Methods)
 def to_multiscale(
@@ -83,45 +87,103 @@ def to_multiscale(
     out_chunks = chunks
     if out_chunks is None:
         out_chunks = default_chunks
-    
+
     # check for valid scale factors
-    current_shape = {d:s for (d, s) in zip(image.dims, image.shape) if d not in {"t", "c"}}
+    current_shape = {
+        d: s for (d, s) in zip(image.dims, image.shape) if d not in {"t", "c"}
+    }
 
     for scale_factor in scale_factors:
         if isinstance(scale_factor, dict):
-            current_shape = {k: (current_shape[k] / s) for (k, s) in scale_factor.items()}
+            current_shape = {
+                k: (current_shape[k] / s) for (k, s) in scale_factor.items()
+            }
         elif isinstance(scale_factor, int):
             current_shape = {k: (s / scale_factor) for (k, s) in current_shape.items()}
-        for k,v in current_shape.items():
+        for k, v in current_shape.items():
             if v < 1:
-                raise ValueError(f"Scale factor {scale_factor} is incompatible with image shape {image.shape} along dimension `{k}`.")
+                raise ValueError(
+                    f"Scale factor {scale_factor} is incompatible with image shape {image.shape} along dimension `{k}`."
+                )
 
     current_input = image.chunk(out_chunks)
     # https://github.com/pydata/xarray/issues/5219
     if "chunks" in current_input.encoding:
         del current_input.encoding["chunks"]
-    data_objects = {f"scale0": current_input.to_dataset(name=image.name, promote_attrs=True)}
+    data_objects = {
+        "scale0": current_input.to_dataset(name=image.name, promote_attrs=True)
+    }
 
     if method is None:
         method = Methods.XARRAY_COARSEN
 
     if method is Methods.XARRAY_COARSEN:
-        data_objects = _downsample_xarray_coarsen(current_input, default_chunks, out_chunks, scale_factors, data_objects, image.name)
+        data_objects = _downsample_xarray_coarsen(
+            current_input,
+            default_chunks,
+            out_chunks,
+            scale_factors,
+            data_objects,
+            image.name,
+        )
     elif method is Methods.ITK_BIN_SHRINK:
-        data_objects = _downsample_itk_bin_shrink(current_input, default_chunks, out_chunks, scale_factors, data_objects, image)
+        data_objects = _downsample_itk_bin_shrink(
+            current_input,
+            default_chunks,
+            out_chunks,
+            scale_factors,
+            data_objects,
+            image,
+        )
     elif method is Methods.ITK_GAUSSIAN:
-        data_objects = _downsample_itk_gaussian(current_input, default_chunks, out_chunks, scale_factors, data_objects, image)
+        data_objects = _downsample_itk_gaussian(
+            current_input,
+            default_chunks,
+            out_chunks,
+            scale_factors,
+            data_objects,
+            image,
+        )
     elif method is Methods.ITK_LABEL_GAUSSIAN:
-        data_objects = _downsample_itk_label(current_input, default_chunks, out_chunks, scale_factors, data_objects, image)
+        data_objects = _downsample_itk_label(
+            current_input,
+            default_chunks,
+            out_chunks,
+            scale_factors,
+            data_objects,
+            image,
+        )
     elif method is Methods.DASK_IMAGE_GAUSSIAN:
-        data_objects = _downsample_dask_image(current_input, default_chunks, out_chunks, scale_factors, data_objects, image, label=False)
+        data_objects = _downsample_dask_image(
+            current_input,
+            default_chunks,
+            out_chunks,
+            scale_factors,
+            data_objects,
+            image,
+            label=False,
+        )
     elif method is Methods.DASK_IMAGE_NEAREST:
-        data_objects = _downsample_dask_image(current_input, default_chunks, out_chunks, scale_factors, data_objects, image, label='nearest')
+        data_objects = _downsample_dask_image(
+            current_input,
+            default_chunks,
+            out_chunks,
+            scale_factors,
+            data_objects,
+            image,
+            label="nearest",
+        )
     elif method is Methods.DASK_IMAGE_MODE:
-        data_objects = _downsample_dask_image(current_input, default_chunks, out_chunks, scale_factors, data_objects, image, label='mode')
+        data_objects = _downsample_dask_image(
+            current_input,
+            default_chunks,
+            out_chunks,
+            scale_factors,
+            data_objects,
+            image,
+            label="mode",
+        )
 
-    multiscale = DataTree.from_dict(
-        d=data_objects
-    )
+    multiscale = DataTree.from_dict(d=data_objects)
 
     return multiscale

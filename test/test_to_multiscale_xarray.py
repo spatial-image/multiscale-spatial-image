@@ -1,8 +1,9 @@
 from multiscale_spatial_image import Methods, to_multiscale
 
-from ._data import input_images, verify_against_baseline, store_new_image
+from ._data import verify_against_baseline, input_images  # noqa: F401
 
-def test_isotropic_scale_factors(input_images):
+
+def test_isotropic_scale_factors(input_images):  # noqa: F811
     dataset_name = "cthead1"
     image = input_images[dataset_name]
     baseline_name = "2_4/XARRAY_COARSEN"
@@ -21,7 +22,8 @@ def test_isotropic_scale_factors(input_images):
     multiscale = to_multiscale(image, [2, 3, 4], method=Methods.XARRAY_COARSEN)
     verify_against_baseline(dataset_name, baseline_name, multiscale)
 
-def test_anisotropic_scale_factors(input_images):
+
+def test_anisotropic_scale_factors(input_images):  # noqa: F811
     dataset_name = "cthead1"
     image = input_images[dataset_name]
     scale_factors = [{"x": 2, "y": 4}, {"x": 1, "y": 2}]

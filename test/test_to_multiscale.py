@@ -2,10 +2,10 @@ import xarray as xr
 import pytest
 from multiscale_spatial_image import to_multiscale
 
-from ._data import input_images
+from ._data import input_images  # noqa: F401
 
 
-def test_base_scale(input_images):
+def test_base_scale(input_images):  # noqa: F811
     image = input_images["cthead1"]
 
     multiscale = to_multiscale(image, [])
