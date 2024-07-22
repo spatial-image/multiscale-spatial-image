@@ -39,6 +39,7 @@ def itk_image_to_multiscale(
     # Orient 3D image so that direction is identity wrt RAI coordinates
     image_dimension = image.GetImageDimension()
     input_direction = np.array(image.GetDirection())
+    oriented_image = image
     if anatomical_axes and image_dimension == 3 and not (np.eye(image_dimension) == input_direction).all():
         desired_orientation = itk.SpatialOrientationEnums.ValidCoordinateOrientations_ITK_COORDINATE_ORIENTATION_RAI
         oriented_image = itk.orient_image_filter(image, use_image_direction=True, desired_coordinate_orientation=desired_orientation)
@@ -46,7 +47,7 @@ def itk_image_to_multiscale(
     elif anatomical_axes and image_dimension != 3:
         raise ValueError(f'Cannot use anatomical axes for input image of size {image_dimension}')
         
-    image_da = itk.xarray_from_image(image)
+    image_da = itk.xarray_from_image(oriented_image)
     image_da.name = name
 
     image_dims: Tuple[str, str, str, str] = ("x", "y", "z", "t") # ITK dims are in xyzt order

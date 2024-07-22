@@ -92,6 +92,7 @@ multiscale-spatial-image = { path = ".", editable = true }
 default = { solve-group = "default" }
 test = { features = ["test", "dask-image", "itk"], solve-group = "default" }
 notebooks = { features = ["test", "dask-image", "itk", "imagej", "notebooks"], solve-group = "default" }
+data = { features = ["data"], no-default-feature = true, solve-group = "default" }
 
 [tool.pixi.feature.test.tasks]
 test = { cmd = "pytest", description = "Run the test suite" }
@@ -108,3 +109,10 @@ python = "3.9.*"
 [tool.pixi.feature.notebooks.tasks]
 init-imagej = { cmd = "python3 -c \"import imagej; ij = imagej.init('2.5.0'); print(ij.getVersion())\"", description = "Initialize the python imagej installation" }
 test-notebooks = { cmd = "pytest --nbmake --nbmake-timeout=3000 examples/ConvertImageioImageResource.ipynb examples/ConvertITKImage.ipynb examples/ConvertPyImageJDataset.ipynb examples/ConvertTiffFile.ipynb examples/HelloMultiscaleSpatialImageWorld.ipynb", depends-on = ["init-imagej"], description = "Test the notebooks" }
+
+[tool.pixi.feature.data.dependencies]
+python = ">=3.9.19,<4"
+pooch = ">=1.8.2,<2"
+
+[tool.pixi.feature.data.tasks]
+hash-data = { cmd = "tar cvf ../data.tar * && gzip -9 -f ../data.tar && echo 'New SHA256:' && python3 -c 'import pooch; print(pooch.file_hash(\"../data.tar.gz\"))'", cwd = "test/data", description = "Update the testing data tarball and get its sha256 hash" }
