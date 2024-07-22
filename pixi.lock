@@ -537,6 +537,7 @@ environments:
       - pypi: https://files.pythonhosted.org/packages/d2/d7/ca95f347442e82700f591f3608e336596ee607daecbcad6a7ebd16ff5de4/tifffile-2024.7.2-py3-none-any.whl
       - pypi: https://files.pythonhosted.org/packages/44/6f/7120676b6d73228c96e17f1f794d8ab046fc910d781c8d151120c3f1569e/toml-0.10.2-py2.py3-none-any.whl
       - pypi: https://files.pythonhosted.org/packages/b7/8a/d82202c9f89eab30f9fc05380daae87d617e2ad11571ab23d7c13a29bb54/toolz-0.12.1-py3-none-any.whl
+      - pypi: https://files.pythonhosted.org/packages/18/eb/fdb7eb9e48b7b02554e1664afd3bd3f117f6b6d6c5881438a0b055554f9b/tqdm-4.66.4-py3-none-any.whl
       - pypi: https://files.pythonhosted.org/packages/65/58/f9c9e6be752e9fcb8b6a0ee9fb87e6e7a1f6bcab2cdc73f02bb7ba91ada0/tzdata-2024.1-py2.py3-none-any.whl
       - pypi: https://files.pythonhosted.org/packages/ce/78/7a78d5197e409371c4fd9734ad9ab41ed6f9147b3ac23256c4e6c81295f2/xarray-2024.6.0-py3-none-any.whl
       - pypi: https://files.pythonhosted.org/packages/8a/35/975071965f95d29b3009b8ee43082634f994d7bda08ddd5b0a0dadaca964/xarray_dataclasses-1.8.0-py3-none-any.whl
@@ -739,6 +740,7 @@ environments:
       - pypi: https://files.pythonhosted.org/packages/d2/d7/ca95f347442e82700f591f3608e336596ee607daecbcad6a7ebd16ff5de4/tifffile-2024.7.2-py3-none-any.whl
       - pypi: https://files.pythonhosted.org/packages/44/6f/7120676b6d73228c96e17f1f794d8ab046fc910d781c8d151120c3f1569e/toml-0.10.2-py2.py3-none-any.whl
       - pypi: https://files.pythonhosted.org/packages/b7/8a/d82202c9f89eab30f9fc05380daae87d617e2ad11571ab23d7c13a29bb54/toolz-0.12.1-py3-none-any.whl
+      - pypi: https://files.pythonhosted.org/packages/18/eb/fdb7eb9e48b7b02554e1664afd3bd3f117f6b6d6c5881438a0b055554f9b/tqdm-4.66.4-py3-none-any.whl
       - pypi: https://files.pythonhosted.org/packages/65/58/f9c9e6be752e9fcb8b6a0ee9fb87e6e7a1f6bcab2cdc73f02bb7ba91ada0/tzdata-2024.1-py2.py3-none-any.whl
       - pypi: https://files.pythonhosted.org/packages/ce/78/7a78d5197e409371c4fd9734ad9ab41ed6f9147b3ac23256c4e6c81295f2/xarray-2024.6.0-py3-none-any.whl
       - pypi: https://files.pythonhosted.org/packages/8a/35/975071965f95d29b3009b8ee43082634f994d7bda08ddd5b0a0dadaca964/xarray_dataclasses-1.8.0-py3-none-any.whl
@@ -941,6 +943,7 @@ environments:
       - pypi: https://files.pythonhosted.org/packages/d2/d7/ca95f347442e82700f591f3608e336596ee607daecbcad6a7ebd16ff5de4/tifffile-2024.7.2-py3-none-any.whl
       - pypi: https://files.pythonhosted.org/packages/44/6f/7120676b6d73228c96e17f1f794d8ab046fc910d781c8d151120c3f1569e/toml-0.10.2-py2.py3-none-any.whl
       - pypi: https://files.pythonhosted.org/packages/b7/8a/d82202c9f89eab30f9fc05380daae87d617e2ad11571ab23d7c13a29bb54/toolz-0.12.1-py3-none-any.whl
+      - pypi: https://files.pythonhosted.org/packages/18/eb/fdb7eb9e48b7b02554e1664afd3bd3f117f6b6d6c5881438a0b055554f9b/tqdm-4.66.4-py3-none-any.whl
       - pypi: https://files.pythonhosted.org/packages/65/58/f9c9e6be752e9fcb8b6a0ee9fb87e6e7a1f6bcab2cdc73f02bb7ba91ada0/tzdata-2024.1-py2.py3-none-any.whl
       - pypi: https://files.pythonhosted.org/packages/ce/78/7a78d5197e409371c4fd9734ad9ab41ed6f9147b3ac23256c4e6c81295f2/xarray-2024.6.0-py3-none-any.whl
       - pypi: https://files.pythonhosted.org/packages/8a/35/975071965f95d29b3009b8ee43082634f994d7bda08ddd5b0a0dadaca964/xarray_dataclasses-1.8.0-py3-none-any.whl
@@ -1144,6 +1147,7 @@ environments:
       - pypi: https://files.pythonhosted.org/packages/d2/d7/ca95f347442e82700f591f3608e336596ee607daecbcad6a7ebd16ff5de4/tifffile-2024.7.2-py3-none-any.whl
       - pypi: https://files.pythonhosted.org/packages/44/6f/7120676b6d73228c96e17f1f794d8ab046fc910d781c8d151120c3f1569e/toml-0.10.2-py2.py3-none-any.whl
       - pypi: https://files.pythonhosted.org/packages/b7/8a/d82202c9f89eab30f9fc05380daae87d617e2ad11571ab23d7c13a29bb54/toolz-0.12.1-py3-none-any.whl
+      - pypi: https://files.pythonhosted.org/packages/18/eb/fdb7eb9e48b7b02554e1664afd3bd3f117f6b6d6c5881438a0b055554f9b/tqdm-4.66.4-py3-none-any.whl
       - pypi: https://files.pythonhosted.org/packages/65/58/f9c9e6be752e9fcb8b6a0ee9fb87e6e7a1f6bcab2cdc73f02bb7ba91ada0/tzdata-2024.1-py2.py3-none-any.whl
       - pypi: https://files.pythonhosted.org/packages/ce/78/7a78d5197e409371c4fd9734ad9ab41ed6f9147b3ac23256c4e6c81295f2/xarray-2024.6.0-py3-none-any.whl
       - pypi: https://files.pythonhosted.org/packages/8a/35/975071965f95d29b3009b8ee43082634f994d7bda08ddd5b0a0dadaca964/xarray_dataclasses-1.8.0-py3-none-any.whl
@@ -5118,7 +5122,7 @@ packages:
   name: multiscale-spatial-image
   version: 1.0.0
   path: .
-  sha256: 72e935520ca05765f7afccfbdda0493e0212974c8f3f800ac1650049955a7b65
+  sha256: efacfdaf8fc2f03d5f46c027961c9bbbe96d70359ff8f9b95537b0811eb97076
   requires_dist:
   - dask
   - numpy
@@ -5132,6 +5136,7 @@ packages:
   - itk-filtering>=5.3.0 ; extra == 'itk'
   - matplotlib<4,>=3.9.1 ; extra == 'notebooks'
   - ome-types<0.6,>=0.5.1.post1 ; extra == 'notebooks'
+  - tqdm<5,>=4.66.4 ; extra == 'notebooks'
   - dask-image ; extra == 'test'
   - fsspec ; extra == 'test'
   - ipfsspec ; extra == 'test'
@@ -8060,6 +8065,21 @@ packages:
   - pkg:pypi/tornado?source=conda-forge-mapping
   size: 642855
   timestamp: 1717722852977
+- kind: pypi
+  name: tqdm
+  version: 4.66.4
+  url: https://files.pythonhosted.org/packages/18/eb/fdb7eb9e48b7b02554e1664afd3bd3f117f6b6d6c5881438a0b055554f9b/tqdm-4.66.4-py3-none-any.whl
+  sha256: b75ca56b413b030bc3f00af51fd2c1a1a5eac6a0c1cca83cbb37a5c52abce644
+  requires_dist:
+  - colorama ; platform_system == 'Windows'
+  - pytest>=6 ; extra == 'dev'
+  - pytest-cov ; extra == 'dev'
+  - pytest-timeout ; extra == 'dev'
+  - pytest-xdist ; extra == 'dev'
+  - ipywidgets>=6 ; extra == 'notebook'
+  - slack-sdk ; extra == 'slack'
+  - requests ; extra == 'telegram'
+  requires_python: '>=3.7'
 - kind: conda
   name: traitlets
   version: 5.14.3
