@@ -1,0 +1,52 @@
+exclude: (^.pixi/|.snap|pixi.lock)
+
+ci:
+  autoupdate_commit_msg: "ENH: update pre-commit hooks"
+  autofix_commit_msg: "STYLE: pre-commit fixes"
+
+repos:
+  - repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: "v4.6.0"
+    hooks:
+      - id: check-added-large-files
+      - id: check-case-conflict
+      - id: check-symlinks
+      - id: check-json
+      - id: check-merge-conflict
+      - id: check-toml
+      - id: check-xml
+      - id: check-yaml
+      - id: debug-statements
+      - id: detect-private-key
+      - id: end-of-file-fixer
+      - id: mixed-line-ending
+      - id: name-tests-test
+        args: ["--pytest-test-first"]
+      - id: requirements-txt-fixer
+      - id: trailing-whitespace
+
+  - repo: https://github.com/pre-commit/mirrors-prettier
+    rev: "v3.0.0"
+    hooks:
+      - id: prettier
+        types_or: [yaml, markdown, html, css, scss, javascript, json]
+        args: [--prose-wrap=always]
+
+  - repo: https://github.com/codespell-project/codespell
+    rev: "v2.2.5"
+    hooks:
+      - id: codespell
+        exclude: examples/
+
+  - repo: https://github.com/shellcheck-py/shellcheck-py
+    rev: "v0.9.0.5"
+    hooks:
+      - id: shellcheck
+
+  - repo: https://github.com/charliermarsh/ruff-pre-commit
+    rev: v0.5.4
+    hooks:
+      - id: ruff
+        args: [--fix, --exit-non-zero-on-fix]
+        exclude: test/conftest.py
+      - id: ruff-format

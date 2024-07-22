@@ -1,13 +1,10 @@
-from typing import Union, List
+from typing import Union
 
-import xarray as xr
 from datatree import DataTree
-from datatree.treenode import TreeNode
 import numpy as np
 from collections.abc import MutableMapping
 from pathlib import Path
 from zarr.storage import BaseStore
-import xarray as xr
 from datatree import register_datatree_accessor
 
 

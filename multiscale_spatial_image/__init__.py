@@ -2,13 +2,12 @@
 
 Generate a multiscale spatial image."""
 
-
 __all__ = [
-  "MultiscaleSpatialImage",
-  "Methods",
-  "to_multiscale",
-  "itk_image_to_multiscale",
-  "__version__",
+    "MultiscaleSpatialImage",
+    "Methods",
+    "to_multiscale",
+    "itk_image_to_multiscale",
+    "__version__",
 ]
 
 from .__about__ import __version__

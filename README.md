@@ -6,10 +6,11 @@
 [![image](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/python/black)
 [![DOI](https://zenodo.org/badge/379678181.svg)](https://zenodo.org/badge/latestdoi/379678181)
 
-Generate a multiscale, chunked, multi-dimensional spatial image data structure that can serialized to [OME-NGFF].
+Generate a multiscale, chunked, multi-dimensional spatial image data structure
+that can serialized to [OME-NGFF].
 
-Each scale is a scientific Python [Xarray] [spatial-image] [Dataset], organized into nodes of an Xarray [Datatree].
-
+Each scale is a scientific Python [Xarray] [spatial-image] [Dataset], organized
+into nodes of an Xarray [Datatree].
 
 ## Installation
 
@@ -32,8 +33,8 @@ image = to_spatial_image(array)
 print(image)
 ```
 
-An [Xarray] [spatial-image] [DataArray].
-Spatial metadata can also be passed during construction.
+An [Xarray] [spatial-image] [DataArray]. Spatial metadata can also be passed
+during construction.
 
 ```
 <xarray.SpatialImage 'image' (y: 128, x: 128)>
@@ -82,9 +83,11 @@ DataTree('multiscales', parent=None)
         image    (y, x) uint8 dask.array<chunksize=(16, 16), meta=np.ndarray>
 ```
 
-Store as an Open Microscopy Environment-Next Generation File Format ([OME-NGFF]) / [netCDF] [Zarr] store.
+Store as an Open Microscopy Environment-Next Generation File Format ([OME-NGFF])
+/ [netCDF] [Zarr] store.
 
-It is highly recommended to use `dimension_separator='/'` in the construction of the Zarr stores.
+It is highly recommended to use `dimension_separator='/'` in the construction of
+the Zarr stores.
 
 ```python
 store = zarr.storage.DirectoryStore('multiscale.zarr', dimension_separator='/')
@@ -96,25 +99,50 @@ released. We mean it :-).
 
 ## Examples
 
-- [![Binder](https://mybinder.org/badge_logo.svg)](https://mybinder.org/v2/gh/spatial-image/multiscale-spatial-image/main?urlpath=lab/tree/examples%2FHelloMultiscaleSpatialImageWorld.ipynb) [Hello MultiscaleSpatialImage World!](./examples/HelloMultiscaleSpatialImageWorld.ipynb) 
-- [![Binder](https://mybinder.org/badge_logo.svg)](https://mybinder.org/v2/gh/spatial-image/multiscale-spatial-image/main?urlpath=lab/tree/examples%2FConvertITKImage.ipynb) [Convert itk.Image](./examples/ConvertITKImage.ipynb) 
-- [![Binder](https://mybinder.org/badge_logo.svg)](https://mybinder.org/v2/gh/spatial-image/multiscale-spatial-image/main?urlpath=lab/tree/examples%2FConvertImageioImageResource.ipynb) [Convert imageio ImageResource](./examples/ConvertImageioImageResource.ipynb) 
-- [![Binder](https://mybinder.org/badge_logo.svg)](https://mybinder.org/v2/gh/spatial-image/multiscale-spatial-image/main?urlpath=lab/tree/examples%2FConvertPyImageJDataset.ipynb) [Convert pyimagej Dataset](./examples/ConvertPyImageJDataset.ipynb) 
+- [![Binder](https://mybinder.org/badge_logo.svg)](https://mybinder.org/v2/gh/spatial-image/multiscale-spatial-image/main?urlpath=lab/tree/examples%2FHelloMultiscaleSpatialImageWorld.ipynb)
+  [Hello MultiscaleSpatialImage World!](./examples/HelloMultiscaleSpatialImageWorld.ipynb)
+- [![Binder](https://mybinder.org/badge_logo.svg)](https://mybinder.org/v2/gh/spatial-image/multiscale-spatial-image/main?urlpath=lab/tree/examples%2FConvertITKImage.ipynb)
+  [Convert itk.Image](./examples/ConvertITKImage.ipynb)
+- [![Binder](https://mybinder.org/badge_logo.svg)](https://mybinder.org/v2/gh/spatial-image/multiscale-spatial-image/main?urlpath=lab/tree/examples%2FConvertImageioImageResource.ipynb)
+  [Convert imageio ImageResource](./examples/ConvertImageioImageResource.ipynb)
+- [![Binder](https://mybinder.org/badge_logo.svg)](https://mybinder.org/v2/gh/spatial-image/multiscale-spatial-image/main?urlpath=lab/tree/examples%2FConvertPyImageJDataset.ipynb)
+  [Convert pyimagej Dataset](./examples/ConvertPyImageJDataset.ipynb)
 
 ## Development
 
 Contributions are welcome and appreciated.
 
-To run the test suite:
+### Get the source code
 
-```
+```shell
 git clone https://github.com/spatial-image/multiscale-spatial-image
 cd multiscale-spatial-image
-pip install -e ".[test]"
-pytest
-# Notebook tests
-pytest --nbmake --nbmake-timeout=3000 examples/*ipynb
 ```
+
+### Install dependencies
+
+First install [pixi]. Then, install project dependencies:
+
+```shell
+pixi install -a
+pixi run pre-commit-install
+```
+
+### Run the test suite
+
+The unit tests:
+
+```shell
+pixi run -e test test
+```
+
+The notebooks tests:
+
+```shell
+pixi run test-notebooks
+```
+
+### Update test data
 
 To add new or update testing data, such as a new baseline for this block:
 
@@ -150,10 +178,15 @@ gzip -9 ../data.tar
 python3 -c 'import pooch; print(pooch.file_hash("../data.tar.gz"))'
 ```
 
-Update the `test_data_sha256` variable in the *test/_data.py* file.
-Upload the data to [web3.storage](https://web3.storage).
-And update the `test_data_ipfs_cid` [Content Identifier (CID)](https://proto.school/anatomy-of-a-cid/01) variable, which is available in the web3.storage web page interface.
+Update the `test_data_sha256` variable in the _test/\_data.py_ file. Upload the
+data to [web3.storage](https://web3.storage). And update the
+`test_data_ipfs_cid`
+[Content Identifier (CID)](https://proto.school/anatomy-of-a-cid/01) variable,
+which is available in the web3.storage web page interface.
 
+### Submit the patch
+
+We use the standard [GitHub flow].
 
 [spatial-image]: https://github.com/spatial-image/spatial-image
 [Xarray]: https://xarray.pydata.org/en/stable/
@@ -164,3 +197,5 @@ And update the `test_data_ipfs_cid` [Content Identifier (CID)](https://proto.sch
 [Zarr]: https://zarr.readthedocs.io/en/stable/
 [Dask]: https://docs.dask.org/en/stable/array.html
 [netCDF]: https://www.unidata.ucar.edu/software/netcdf/
+[pixi]: https://pixi.sh
+[GitHub flow]: https://docs.github.com/en/get-started/using-github/github-flow
