@@ -105,16 +105,37 @@ released. We mean it :-).
 
 Contributions are welcome and appreciated.
 
-To run the test suite:
+### Get the source code
 
-```
+```shell
 git clone https://github.com/spatial-image/multiscale-spatial-image
 cd multiscale-spatial-image
-pip install -e ".[test]"
-pytest
-# Notebook tests
-pytest --nbmake --nbmake-timeout=3000 examples/*ipynb
 ```
+
+### Install dependencies
+
+First install [pixi]. Then, install project dependencies:
+
+```shell
+pixi install -a
+pixi run pre-commit-install
+```
+
+### Run the test suite
+
+The unit tests:
+
+```shell
+pixi run -e test test
+```
+
+The notebooks tests:
+
+```shell
+pixi run test-notebooks
+```
+
+### Update test data
 
 To add new or update testing data, such as a new baseline for this block:
 
@@ -154,6 +175,10 @@ Update the `test_data_sha256` variable in the *test/_data.py* file.
 Upload the data to [web3.storage](https://web3.storage).
 And update the `test_data_ipfs_cid` [Content Identifier (CID)](https://proto.school/anatomy-of-a-cid/01) variable, which is available in the web3.storage web page interface.
 
+### Submit the patch
+
+We use the standard [GitHub flow].
+
 
 [spatial-image]: https://github.com/spatial-image/spatial-image
 [Xarray]: https://xarray.pydata.org/en/stable/
@@ -164,3 +189,5 @@ And update the `test_data_ipfs_cid` [Content Identifier (CID)](https://proto.sch
 [Zarr]: https://zarr.readthedocs.io/en/stable/
 [Dask]: https://docs.dask.org/en/stable/array.html
 [netCDF]: https://www.unidata.ucar.edu/software/netcdf/
+[pixi]: https://pixi.sh
+[GitHub flow]: https://docs.github.com/en/get-started/using-github/github-flow
