@@ -38,8 +38,7 @@ dependencies = [
     "dask",
     "python-dateutil",
     "spatial_image>=0.2.1",
-    "xarray",
-    "xarray-datatree>=0.0.5",
+    "xarray>=2024.10.0",
     "zarr",
 ]
 

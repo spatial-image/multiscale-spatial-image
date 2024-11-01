@@ -3,7 +3,7 @@ from typing import Union, Sequence, List, Optional, Dict, Mapping, Any, Tuple
 from spatial_image import to_spatial_image
 
 from .to_multiscale import to_multiscale, Methods
-from datatree import DataTree
+from xarray import DataTree
 
 
 def itk_image_to_multiscale(

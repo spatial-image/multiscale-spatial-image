@@ -4,7 +4,6 @@ import pytest
 import pooch
 from zarr.storage import DirectoryStore
 import xarray as xr
-from datatree import open_datatree
 
 test_data_ipfs_cid = "bafybeiaskr5fxg6rbcwlxl6ibzqhubdleacenrpbnymc6oblwoi7ceqzta"
 test_data_sha256 = "507dd779cba007c46ea68a5fe8865cabd5d8a7e00816470faae9195d1f1c3cd1"
@@ -58,7 +57,7 @@ def verify_against_baseline(dataset_name, baseline_name, multiscale):
         test_data_dir / f"baseline/{dataset_name}/{baseline_name}",
         dimension_separator="/",
     )
-    dt = open_datatree(store, engine="zarr", mode="r")
+    dt = xr.open_datatree(store, engine="zarr", mode="r")
     xr.testing.assert_equal(dt.ds, multiscale.ds)
     for scale in multiscale.children:
         xr.testing.assert_equal(dt[scale].ds, multiscale[scale].ds)
