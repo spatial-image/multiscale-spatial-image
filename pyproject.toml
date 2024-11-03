@@ -15,8 +15,6 @@ classifiers = [
     'Intended Audience :: Developers',
     'Intended Audience :: Science/Research',
     'Programming Language :: Python :: 3',
-    'Programming Language :: Python :: 3.8',
-    'Programming Language :: Python :: 3.9',
     'Programming Language :: Python :: 3.10',
     'Programming Language :: Python :: 3.11',
     'Programming Language :: Python :: 3.12',
@@ -28,11 +26,11 @@ keywords = [
     "zarr",
     "dask",
     "imaging",
-    "visualization",
+    "visualization"
 ]
 dynamic = ["version"]
 
-requires-python = ">=3.8"
+requires-python = ">=3.10, <3.13"
 dependencies = [
     "numpy",
     "dask",
@@ -70,7 +68,7 @@ dask-image = [
 imagej = [
   "pyimagej",
 ]
-notebooks = ["matplotlib>=3.9.1,<4", "ome-types>=0.5.1.post1,<0.6", "tqdm>=4.66.4,<5"]
+notebooks = ["matplotlib>=3.9.2,<4", "ome-types>=0.5.1.post1,<0.6", "tqdm>=4.66.4,<5"]
 
 [tool.black]
 line-length = 88
@@ -98,13 +96,13 @@ lint = { features = ["lint"], no-default-feature = true, solve-group = "default"
 test = { cmd = "pytest", description = "Run the test suite" }
 
 [tool.pixi.feature.test.dependencies]
-python = "3.9.*"
+python = "3.10.*"
 
 [tool.pixi.feature.notebooks.dependencies]
 openjdk = "8.*"
 maven = ">=3.9.8,<3.10"
 jupyterlab = ">=4.2.4,<4.3"
-python = "3.9.*"
+python = "3.10.*"
 
 [tool.pixi.feature.notebooks.tasks]
 init-imagej = { cmd = "python3 -c \"import imagej; ij = imagej.init('2.15.0'); print(ij.getVersion())\"", description = "Initialize the python imagej installation" }
@@ -112,7 +110,7 @@ test-notebooks = { cmd = "pytest --nbmake --nbmake-timeout=3000 examples/Convert
 dev-notebooks = { cmd = "jupyter lab examples", description = "Start Jupyter Lab" }
 
 [tool.pixi.feature.data.dependencies]
-python = ">=3.9.19,<4"
+python = ">=3.10.0,<4"
 pooch = ">=1.8.2,<2"
 
 [tool.pixi.feature.data.tasks]
