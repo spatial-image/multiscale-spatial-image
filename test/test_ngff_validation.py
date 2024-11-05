@@ -5,7 +5,7 @@ import urllib3
 from referencing import Registry, Resource
 from jsonschema import Draft202012Validator
 
-from datatree import DataTree
+from xarray import DataTree
 
 from multiscale_spatial_image import to_multiscale, MultiscaleSpatialImage
 from spatial_image import to_spatial_image

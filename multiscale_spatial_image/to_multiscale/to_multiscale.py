@@ -4,7 +4,7 @@ from enum import Enum
 from spatial_image import SpatialImage  # type: ignore
 
 
-from datatree import DataTree
+from xarray import DataTree
 
 from ._xarray import _downsample_xarray_coarsen
 from ._itk import (
@@ -184,6 +184,6 @@ def to_multiscale(
             label="mode",
         )
 
-    multiscale = DataTree.from_dict(d=data_objects)
+    multiscale = DataTree.from_dict(data_objects)
 
     return multiscale

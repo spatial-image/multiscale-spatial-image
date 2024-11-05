@@ -1,11 +1,10 @@
 from typing import Union
 
-from datatree import DataTree
+from xarray import DataTree, register_datatree_accessor
 import numpy as np
 from collections.abc import MutableMapping
 from pathlib import Path
 from zarr.storage import BaseStore
-from datatree import register_datatree_accessor
 
 
 @register_datatree_accessor("msi")
