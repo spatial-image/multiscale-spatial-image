@@ -1,7 +1,6 @@
-from multiscale_spatial_image import skip_non_dimension_nodes
 import numpy as np
 from spatial_image import to_spatial_image
-from multiscale_spatial_image import to_multiscale
+from multiscale_spatial_image import skip_non_dimension_nodes, to_multiscale
 
 
 def test_skip_nodes():

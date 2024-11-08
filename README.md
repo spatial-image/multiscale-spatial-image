@@ -83,6 +83,58 @@ DataTree('multiscales', parent=None)
         image    (y, x) uint8 dask.array<chunksize=(16, 16), meta=np.ndarray>
 ```
 
+Map a function over datasets while skipping nodes that do not contain dimensions
+
+```python
+import numpy as np
+from spatial_image import to_spatial_image
+from multiscale_spatial_image import skip_non_dimension_nodes, to_multiscale
+
+data = np.zeros((2, 200, 200))
+dims = ("c", "y", "x")
+scale_factors = [2, 2]
+image = to_spatial_image(array_like=data, dims=dims)
+multiscale = to_multiscale(image, scale_factors=scale_factors)
+
+@skip_non_dimension_nodes
+def transpose(ds, *args, **kwargs):
+    return ds.transpose(*args, **kwargs)
+
+multiscale = multiscale.map_over_datasets(transpose, "y", "x", "c")
+print(multiscale)
+```
+
+A transposed MultiscaleSpatialImage.
+
+```
+<xarray.DataTree>
+Group: /
+├── Group: /scale0
+│       Dimensions:  (c: 2, y: 200, x: 200)
+│       Coordinates:
+│         * c        (c) int32 8B 0 1
+│         * y        (y) float64 2kB 0.0 1.0 2.0 3.0 4.0 ... 196.0 197.0 198.0 199.0
+│         * x        (x) float64 2kB 0.0 1.0 2.0 3.0 4.0 ... 196.0 197.0 198.0 199.0
+│       Data variables:
+│           image    (y, x, c) float64 640kB dask.array<chunksize=(200, 200, 2), meta=np.ndarray>
+├── Group: /scale1
+│       Dimensions:  (c: 2, y: 100, x: 100)
+│       Coordinates:
+│         * c        (c) int32 8B 0 1
+│         * y        (y) float64 800B 0.5 2.5 4.5 6.5 8.5 ... 192.5 194.5 196.5 198.5
+│         * x        (x) float64 800B 0.5 2.5 4.5 6.5 8.5 ... 192.5 194.5 196.5 198.5
+│       Data variables:
+│           image    (y, x, c) float64 160kB dask.array<chunksize=(100, 100, 2), meta=np.ndarray>
+└── Group: /scale2
+        Dimensions:  (c: 2, y: 50, x: 50)
+        Coordinates:
+          * c        (c) int32 8B 0 1
+          * y        (y) float64 400B 1.5 5.5 9.5 13.5 17.5 ... 185.5 189.5 193.5 197.5
+          * x        (x) float64 400B 1.5 5.5 9.5 13.5 17.5 ... 185.5 189.5 193.5 197.5
+        Data variables:
+            image    (y, x, c) float64 40kB dask.array<chunksize=(50, 50, 2), meta=np.ndarray>
+```
+
 Store as an Open Microscopy Environment-Next Generation File Format ([OME-NGFF])
 / [netCDF] [Zarr] store.
 
