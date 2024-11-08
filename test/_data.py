@@ -14,7 +14,8 @@ extract_dir = "data"
 test_data_dir = test_dir / extract_dir
 test_data = pooch.create(
     path=test_dir,
-    base_url=f"https://{test_data_ipfs_cid}.ipfs.w3s.link/ipfs/{test_data_ipfs_cid}/",
+    # base_url=f"https://{test_data_ipfs_cid}.ipfs.w3s.link/ipfs/{test_data_ipfs_cid}/",
+    base_url="https://github.com/spatial-image/multiscale-spatial-image/releases/download/v2.0.0/",
     registry={
         "data.tar.gz": f"sha256:{test_data_sha256}",
     },
