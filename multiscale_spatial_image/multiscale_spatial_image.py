@@ -2,9 +2,10 @@ from typing import Union
 
 from xarray import DataTree, register_datatree_accessor
 import numpy as np
-from collections.abc import MutableMapping
+from collections.abc import MutableMapping, Hashable
 from pathlib import Path
 from zarr.storage import BaseStore
+from multiscale_spatial_image.operations import transpose
 
 
 @register_datatree_accessor("msi")
@@ -121,3 +122,18 @@ class MultiscaleSpatialImage:
         self._dt.ds = self._dt.ds.assign_attrs(**ngff_metadata)
 
         self._dt.to_zarr(store, mode=mode, **kwargs)
+
+    def transpose(self, *dims: Hashable) -> DataTree:
+        """Return a `DataTree` with all dimensions of arrays in datasets transposed.
+
+        This method automatically skips those nodes of the `DataTree` that do not contain
+        dimensions. Note that for `Dataset`s themselves the order of dimensions stays the same.
+        In case of a `DataTree` node missing specified dimensions an error is raised.
+
+        Parameters
+        ----------
+        *dims : Hashable | None
+            If not specified, reverse the dimensions on each array. Otherwise,
+            reorder the dimensions to the order that the `dims` are specified..
+        """
+        return self._dt.map_over_datasets(transpose, *dims)

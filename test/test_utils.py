@@ -16,7 +16,7 @@ def test_skip_nodes():
 
     for scale in list(multiscale_img.keys()):
         assert multiscale_img[scale]["image"].dims == ("c", "y", "x")
-
+    multiscale_img.msi.transpose()
     # applying this function without skipping the root node would fail as the root node does not have dimensions.
     result = multiscale_img.map_over_datasets(transpose, "y", "x", "c")
     for scale in list(result.keys()):
