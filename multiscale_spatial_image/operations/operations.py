@@ -14,9 +14,5 @@ def transpose(ds: Dataset, *args: Any, **kwargs: Any) -> Dataset:
 
 
 @skip_non_dimension_nodes
-def reindex(ds: Dataset, *args: Any, **kwargs: Any) -> Dataset:
-    # A copy is required as a dataset view as used in map_over_datasets is not mutable
-    # TODO: Check whether setting item on wrapping datatree node would be better than copy or this can be dropped.
-    ds_copy = ds.copy()
-    ds_copy["image"] = ds_copy["image"].reindex(*args, **kwargs)
-    return ds_copy
+def reindex_data_arrays(ds: Dataset, *args: Any, **kwargs: Any) -> Dataset:
+    return ds["image"].reindex(*args, **kwargs).to_dataset()

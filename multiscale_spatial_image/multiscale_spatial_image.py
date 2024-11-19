@@ -5,7 +5,11 @@ import numpy as np
 from collections.abc import MutableMapping, Hashable
 from pathlib import Path
 from zarr.storage import BaseStore
-from multiscale_spatial_image.operations import transpose
+from multiscale_spatial_image.operations import (
+    transpose,
+    reindex_data_arrays,
+    assign_coords,
+)
 
 
 @register_datatree_accessor("msi")
@@ -137,3 +141,25 @@ class MultiscaleSpatialImage:
             reorder the dimensions to the order that the `dims` are specified..
         """
         return self._dt.map_over_datasets(transpose, *dims)
+
+    def reindex_data_arrays(
+        self,
+        indexers,
+        method=None,
+        tolerance=None,
+        copy=False,
+        fill_value=None,
+        **indexer_kwargs,
+    ):
+        return self._dt.map_over_datasets(
+            reindex_data_arrays,
+            indexers,
+            method,
+            tolerance,
+            copy,
+            fill_value,
+            *indexer_kwargs,
+        )
+
+    def assign_coords(self, coords, **coords_kwargs):
+        return self._dt.map_over_datasets(assign_coords, coords, *coords_kwargs)
