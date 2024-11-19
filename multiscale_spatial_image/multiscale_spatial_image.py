@@ -1,4 +1,4 @@
-from typing import Union
+from typing import Union, Iterable, Any
 
 from xarray import DataTree, register_datatree_accessor
 import numpy as np
@@ -144,13 +144,47 @@ class MultiscaleSpatialImage:
 
     def reindex_data_arrays(
         self,
-        indexers,
-        method=None,
-        tolerance=None,
-        copy=False,
-        fill_value=None,
-        **indexer_kwargs,
+        indexers: dict[str, Any],
+        method: str | None = None,
+        tolerance: float | Iterable[float] | str | None = None,
+        copy: bool = False,
+        fill_value: int | dict[str, int] | None = None,
+        **indexer_kwargs: Any,
     ):
+        """
+        Reindex the `DataArray`s present in the datasets at each scale level of the MultiscaleSpatialImage.
+
+        From the original xarray docstring: Conform this object onto the indexes of another object, filling in missing
+        values with fill_value. The default fill value is NaN.
+
+        Parameters
+        ----------
+        indexers : dict | None
+            Dictionary with keys given by dimension names and values given by arrays of coordinates tick labels.
+            Any mis-matched coordinate values will be filled in with NaN, and any mis-matched dimension names will
+            simply be ignored. One of indexers or indexers_kwargs must be provided.
+        method : str | None
+            Method to use for filling index values in indexers not found on this data array:
+                - None (default): don’t fill gaps
+                - pad / ffill: propagate last valid index value forward
+                - backfill / bfill: propagate next valid index value backward
+                - nearest: use nearest valid index value
+        tolerance: float | Iterable[float] | str | None
+            Maximum distance between original and new labels for inexact matches. The values of the index at the
+            matching locations must satisfy the equation abs(index[indexer] - target) <= tolerance. Tolerance may
+            be a scalar value, which applies the same tolerance to all values, or list-like, which applies variable
+            tolerance per element. List-like must be the same size as the index and its dtype must exactly match the
+            index’s type.
+        copy : bool
+            If copy=True, data in the return value is always copied. If copy=False and reindexing is unnecessary, or
+            can be performed with only slice operations, then the output may share memory with the input. In either
+            case, a new xarray object is always returned.
+        fill_value: int | dict[str, int] | None
+            Value to use for newly missing values. If a dict-like, maps variable names (including coordinates) to fill
+            values. Use this data array’s name to refer to the data array’s values.
+        **indexer_kwargs
+            The keyword arguments form of indexers. One of indexers or indexers_kwargs must be provided.
+        """
         return self._dt.map_over_datasets(
             reindex_data_arrays,
             indexers,
@@ -162,4 +196,24 @@ class MultiscaleSpatialImage:
         )
 
     def assign_coords(self, coords, **coords_kwargs):
+        """
+        Assign new coordinates to all `Dataset`s in the `DataTree` having dimensions.
+
+        Returns a new `Dataset` at each scale level of the `MultiscaleSpatialImage` with all the original data in
+        addition to the new coordinates.
+
+        Parameters
+        ----------
+        coords
+            A mapping whose keys are the names of the coordinates and values are the coordinates to assign.
+            The mapping will generally be a dict or Coordinates.
+                - If a value is a standard data value — for example, a DataArray, scalar, or array — the data is simply
+                  assigned as a coordinate.
+                - If a value is callable, it is called with this object as the only parameter, and the return value is
+                  used as new coordinate variables.
+                - A coordinate can also be defined and attached to an existing dimension using a tuple with the first
+                  element the dimension name and the second element the values for this new coordinate.
+        **coords_kwargs
+            The keyword arguments form of coords. One of coords or coords_kwargs must be provided.
+        """
         return self._dt.map_over_datasets(assign_coords, coords, *coords_kwargs)
