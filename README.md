@@ -37,17 +37,17 @@ An [Xarray] [spatial-image] [DataArray]. Spatial metadata can also be passed
 during construction.
 
 ```
-<xarray.SpatialImage 'image' (y: 128, x: 128)>
-array([[114,  47, 215, ..., 245,  14, 175],
-       [ 94, 186, 112, ...,  42,  96,  30],
-       [133, 170, 193, ..., 176,  47,   8],
+<xarray.DataArray 'image' (y: 128, x: 128)> Size: 16kB
+array([[170,  79, 215, ...,  31, 151, 150],
+       [ 77, 181,   1, ..., 217, 176, 228],
+       [193,  91, 240, ..., 132, 152,  41],
        ...,
-       [202, 218, 237, ...,  19, 108, 135],
-       [ 99,  94, 207, ..., 233,  83, 112],
-       [157, 110, 186, ..., 142, 153,  42]], dtype=uint8)
+       [ 50, 140, 231, ...,  80, 236,  28],
+       [ 89,  46, 180, ...,  84,  42, 140],
+       [ 96, 148, 240, ...,  61,  43, 255]], dtype=uint8)
 Coordinates:
-  * y        (y) float64 0.0 1.0 2.0 3.0 4.0 ... 123.0 124.0 125.0 126.0 127.0
-  * x        (x) float64 0.0 1.0 2.0 3.0 4.0 ... 123.0 124.0 125.0 126.0 127.0
+  * y        (y) float64 1kB 0.0 1.0 2.0 3.0 4.0 ... 124.0 125.0 126.0 127.0
+  * x        (x) float64 1kB 0.0 1.0 2.0 3.0 4.0 ... 124.0 125.0 126.0 127.0
 ```
 
 ```python
@@ -59,28 +59,29 @@ print(multiscale)
 A chunked [Dask] Array MultiscaleSpatialImage [Xarray] [Datatree].
 
 ```
-DataTree('multiscales', parent=None)
-├── DataTree('scale0')
-│   Dimensions:  (y: 128, x: 128)
-│   Coordinates:
-│     * y        (y) float64 0.0 1.0 2.0 3.0 4.0 ... 123.0 124.0 125.0 126.0 127.0
-│     * x        (x) float64 0.0 1.0 2.0 3.0 4.0 ... 123.0 124.0 125.0 126.0 127.0
-│   Data variables:
-│       image    (y, x) uint8 dask.array<chunksize=(128, 128), meta=np.ndarray>
-├── DataTree('scale1')
-│   Dimensions:  (y: 64, x: 64)
-│   Coordinates:
-│     * y        (y) float64 0.5 2.5 4.5 6.5 8.5 ... 118.5 120.5 122.5 124.5 126.5
-│     * x        (x) float64 0.5 2.5 4.5 6.5 8.5 ... 118.5 120.5 122.5 124.5 126.5
-│   Data variables:
-│       image    (y, x) uint8 dask.array<chunksize=(64, 64), meta=np.ndarray>
-└── DataTree('scale2')
-    Dimensions:  (y: 16, x: 16)
-    Coordinates:
-      * y        (y) float64 3.5 11.5 19.5 27.5 35.5 ... 91.5 99.5 107.5 115.5 123.5
-      * x        (x) float64 3.5 11.5 19.5 27.5 35.5 ... 91.5 99.5 107.5 115.5 123.5
-    Data variables:
-        image    (y, x) uint8 dask.array<chunksize=(16, 16), meta=np.ndarray>
+<xarray.DataTree>
+Group: /
+├── Group: /scale0
+│       Dimensions:  (y: 128, x: 128)
+│       Coordinates:
+│         * y        (y) float64 1kB 0.0 1.0 2.0 3.0 4.0 ... 124.0 125.0 126.0 127.0
+│         * x        (x) float64 1kB 0.0 1.0 2.0 3.0 4.0 ... 124.0 125.0 126.0 127.0
+│       Data variables:
+│           image    (y, x) uint8 16kB dask.array<chunksize=(128, 128), meta=np.ndarray>
+├── Group: /scale1
+│       Dimensions:  (y: 64, x: 64)
+│       Coordinates:
+│         * y        (y) float64 512B 0.5 2.5 4.5 6.5 8.5 ... 120.5 122.5 124.5 126.5
+│         * x        (x) float64 512B 0.5 2.5 4.5 6.5 8.5 ... 120.5 122.5 124.5 126.5
+│       Data variables:
+│           image    (y, x) uint8 4kB dask.array<chunksize=(64, 64), meta=np.ndarray>
+└── Group: /scale2
+        Dimensions:  (y: 16, x: 16)
+        Coordinates:
+          * y        (y) float64 128B 3.5 11.5 19.5 27.5 35.5 ... 99.5 107.5 115.5 123.5
+          * x        (x) float64 128B 3.5 11.5 19.5 27.5 35.5 ... 99.5 107.5 115.5 123.5
+        Data variables:
+            image    (y, x) uint8 256B dask.array<chunksize=(16, 16), meta=np.ndarray>
 ```
 
 Map a function over datasets while skipping nodes that do not contain dimensions
@@ -134,6 +135,19 @@ Group: /
         Data variables:
             image    (y, x, c) float64 40kB dask.array<chunksize=(50, 50, 2), meta=np.ndarray>
 ```
+
+While the decorator allows you to define your own methods to map over datasets
+in the `DataTree` while ignoring those datasets not having dimensions, this
+library also provides a few convenience methods, for example the transpose
+method we saw earlier can also be applied as follows:
+
+```python
+multiscale = multiscale.msi.transpose("y", "x", "c")
+```
+
+Other methods implemented this way are `reindex`, equivalent to the
+`xr.DataArray` reindex method and `assign_coords`, equivalent to `xr.Dataset`
+assign_coords method.
 
 Store as an Open Microscopy Environment-Next Generation File Format ([OME-NGFF])
 / [netCDF] [Zarr] store.
