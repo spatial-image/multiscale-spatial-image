@@ -7,7 +7,7 @@ name = "multiscale_spatial_image"
 description = "Generate a multiscale, chunked, multi-dimensional spatial image data structure that can be serialized to OME-NGFF."
 authors = [{name = "Matt McCormick", email = "matt@mmmccormick.com"}]
 readme = "README.md"
-license-file = "LICENSE"
+License-File = "LICENSE"
 home-page = "https://github.com/spatial-image/multiscale-spatial-image"
 classifiers = [
    "License :: OSI Approved :: Apache Software License",
