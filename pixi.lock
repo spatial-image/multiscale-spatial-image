@@ -5326,7 +5326,7 @@ packages:
   name: multiscale-spatial-image
   version: 2.0.2
   path: .
-  sha256: e2b3803080e5a8d162c70da12307451ac21d609cbd5deb6ee5306a1f60c03064
+  sha256: 5e5b5d8c2b97978f918e794481b96ea229132ae4530ba1e5f5f9e0502c38ebb1
   requires_dist:
   - dask
   - numpy
