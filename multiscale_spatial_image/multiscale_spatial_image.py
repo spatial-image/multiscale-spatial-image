@@ -131,7 +131,7 @@ class MultiscaleSpatialImage:
         """Return a `DataTree` with all dimensions of arrays in datasets transposed.
 
         This method automatically skips those nodes of the `DataTree` that do not contain
-        dimensions. Note that for `Dataset`s themselves the order of dimensions stays the same.
+        dimensions. Note that for `Dataset`s themselves, the order of dimensions stays the same.
         In case of a `DataTree` node missing specified dimensions an error is raised.
 
         Parameters
