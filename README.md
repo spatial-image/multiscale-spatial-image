@@ -147,7 +147,7 @@ multiscale = multiscale.msi.transpose("y", "x", "c")
 
 Other methods implemented this way are `reindex`, equivalent to the
 `xr.DataArray` reindex method and `assign_coords`, equivalent to `xr.Dataset`
-assign_coords method.
+`assign_coords` method.
 
 Store as an Open Microscopy Environment-Next Generation File Format ([OME-NGFF])
 / [netCDF] [Zarr] store.
