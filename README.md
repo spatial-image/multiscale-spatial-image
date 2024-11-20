@@ -138,7 +138,7 @@ Group: /
 
 While the decorator allows you to define your own methods to map over datasets
 in the `DataTree` while ignoring those datasets not having dimensions, this
-library also provides a few convenience methods, for example the transpose
+library also provides a few convenience methods. For example, the transpose
 method we saw earlier can also be applied as follows:
 
 ```python
