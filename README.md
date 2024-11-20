@@ -38,13 +38,13 @@ during construction.
 
 ```
 <xarray.DataArray 'image' (y: 128, x: 128)> Size: 16kB
-array([[166, 225, 182, ..., 118, 153,  82],
-       [194,  64,  15, ...,  50,  45, 146],
-       [232,  41,  44, ..., 148, 245, 170],
+array([[170,  79, 215, ...,  31, 151, 150],
+       [ 77, 181,   1, ..., 217, 176, 228],
+       [193,  91, 240, ..., 132, 152,  41],
        ...,
-       [ 99,  94,   7, ..., 136, 205,  30],
-       [ 52, 244, 229, ..., 108,  45,  58],
-       [ 72, 122, 212, ..., 183,  73, 188]], dtype=uint8)
+       [ 50, 140, 231, ...,  80, 236,  28],
+       [ 89,  46, 180, ...,  84,  42, 140],
+       [ 96, 148, 240, ...,  61,  43, 255]], dtype=uint8)
 Coordinates:
   * y        (y) float64 1kB 0.0 1.0 2.0 3.0 4.0 ... 124.0 125.0 126.0 127.0
   * x        (x) float64 1kB 0.0 1.0 2.0 3.0 4.0 ... 124.0 125.0 126.0 127.0
@@ -135,6 +135,20 @@ Group: /
         Data variables:
             image    (y, x, c) float64 40kB dask.array<chunksize=(50, 50, 2), meta=np.ndarray>
 ```
+
+While the decorator allows you to define your own methods to map over datasets
+in the `DataTree` while ignoring those datasets not having dimensions, this
+library also provides a few convenience methods. For example, the transpose
+method we saw earlier can also be applied as follows:
+
+```python
+multiscale = multiscale.msi.transpose("y", "x", "c")
+```
+
+Other methods implemented this way are `reindex`, equivalent to the
+`xr.DataArray`
+[reindex](https://docs.xarray.dev/en/stable/generated/xarray.DataArray.reindex.html)
+method and `assign_coords`, equivalent to `xr.Dataset` `assign_coords` method.
 
 Store as an Open Microscopy Environment-Next Generation File Format ([OME-NGFF])
 / [netCDF] [Zarr] store.
