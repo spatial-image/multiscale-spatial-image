@@ -4,12 +4,18 @@ from xarray import DataTree, register_datatree_accessor
 import numpy as np
 from collections.abc import MutableMapping, Hashable
 from pathlib import Path
-from zarr.storage import BaseStore
+import zarr.storage
 from multiscale_spatial_image.operations import (
     transpose,
     reindex_data_arrays,
     assign_coords,
 )
+
+# Zarr Python 3
+if hasattr(zarr.storage, "StoreLike"):
+    StoreLike = zarr.storage.StoreLike
+else:
+    StoreLike = Union[MutableMapping, str, Path, zarr.storage.BaseStore]
 
 
 @register_datatree_accessor("msi")
@@ -33,7 +39,7 @@ class MultiscaleSpatialImage:
 
     def to_zarr(
         self,
-        store: Union[MutableMapping, str, Path, BaseStore],
+        store: StoreLike,
         mode: str = "w",
         encoding=None,
         **kwargs,
@@ -43,7 +49,7 @@ class MultiscaleSpatialImage:
 
         Metadata is added according the OME-NGFF standard.
 
-        store : MutableMapping, str or Path, or zarr.storage.BaseStore
+        store : StoreLike
             Store or path to directory in file system
         mode : {{"w", "w-", "a", "r+", None}, default: "w"
             Persistence mode: “w” means create (overwrite if exists); “w-” means create (fail if exists);
