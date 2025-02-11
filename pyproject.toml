@@ -8,7 +8,6 @@ description = "Generate a multiscale, chunked, multi-dimensional spatial image d
 authors = [{name = "Matt McCormick", email = "matt@mmmccormick.com"}]
 readme = "README.md"
 license.file = "LICENSE"
-home-page = "https://github.com/spatial-image/multiscale-spatial-image"
 classifiers = [
    "License :: OSI Approved :: Apache Software License",
     "Programming Language :: Python",
