@@ -2,7 +2,6 @@ from pathlib import Path
 
 import pytest
 import pooch
-from zarr.storage import DirectoryStore
 import xarray as xr
 
 test_data_ipfs_cid = "bafybeiaskr5fxg6rbcwlxl6ibzqhubdleacenrpbnymc6oblwoi7ceqzta"
@@ -29,23 +28,41 @@ def input_images():
     test_data.fetch("data.tar.gz", processor=untar)
     result = {}
 
-    store = DirectoryStore(
-        test_data_dir / "input" / "cthead1.zarr", dimension_separator="/"
-    )
+    store_path = test_data_dir / "input" / "cthead1.zarr"
+    try:
+        from zarr.storage import DirectoryStore
+
+        store = DirectoryStore(store_path, dimension_separator="/")
+    except ImportError:
+        from zarr.storage import LocalStore
+
+        store = LocalStore(store_path)
     image_ds = xr.open_zarr(store)
     image_da = image_ds.cthead1
     result["cthead1"] = image_da
 
-    store = DirectoryStore(
-        test_data_dir / "input" / "small_head.zarr", dimension_separator="/"
-    )
+    store_path = test_data_dir / "input" / "small_head.zarr"
+    try:
+        from zarr.storage import DirectoryStore
+
+        store = DirectoryStore(store_path, dimension_separator="/")
+    except ImportError:
+        from zarr.storage import LocalStore
+
+        store = LocalStore(store_path)
     image_ds = xr.open_zarr(store)
     image_da = image_ds.small_head
     result["small_head"] = image_da
 
-    store = DirectoryStore(
-        test_data_dir / "input" / "2th_cthead1.zarr",
-    )
+    store_path = test_data_dir / "input" / "2th_cthead1.zarr"
+    try:
+        from zarr.storage import DirectoryStore
+
+        store = DirectoryStore(store_path, dimension_separator="/")
+    except ImportError:
+        from zarr.storage import LocalStore
+
+        store = LocalStore(store_path)
     image_ds = xr.open_zarr(store)
     image_da = image_ds["2th_cthead1"]
     result["2th_cthead1"] = image_da
@@ -54,10 +71,15 @@ def input_images():
 
 
 def verify_against_baseline(dataset_name, baseline_name, multiscale):
-    store = DirectoryStore(
-        test_data_dir / f"baseline/{dataset_name}/{baseline_name}",
-        dimension_separator="/",
-    )
+    store_path = test_data_dir / f"baseline/{dataset_name}/{baseline_name}"
+    try:
+        from zarr.storage import DirectoryStore
+
+        store = DirectoryStore(store_path, dimension_separator="/")
+    except ImportError:
+        from zarr.storage import LocalStore
+
+        store = LocalStore(store_path)
     dt = xr.open_datatree(store, engine="zarr", mode="r")
     xr.testing.assert_equal(dt.ds, multiscale.ds)
     for scale in multiscale.children:
@@ -68,8 +90,15 @@ def store_new_image(dataset_name, baseline_name, multiscale_image):
     """Helper method for writing output results to disk
     for later upload as test baseline"""
     path = test_data_dir / f"baseline/{dataset_name}/{baseline_name}"
-    store = DirectoryStore(
-        str(path),
-        dimension_separator="/",
-    )
+    try:
+        from zarr.storage import DirectoryStore
+
+        store = DirectoryStore(
+            str(path),
+            dimension_separator="/",
+        )
+    except ImportError:
+        from zarr.storage import LocalStore
+
+        store = LocalStore(str(path))
     multiscale_image.to_zarr(store, mode="w")
