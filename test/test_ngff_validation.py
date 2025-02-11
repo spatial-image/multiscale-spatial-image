@@ -29,7 +29,7 @@ def load_schema(version: str = "0.4", strict: bool = False) -> Dict:
 
 
 def check_valid_ngff(multiscale: DataTree):
-    store = zarr.storage.MemoryStore(dimension_separator="/")
+    store = zarr.storage.MemoryStore()
     assert isinstance(multiscale.msi, MultiscaleSpatialImage)
     multiscale.msi.to_zarr(store, compute=True)
     zarr.convenience.consolidate_metadata(store)
