@@ -34,7 +34,8 @@ dependencies = [
     "numpy",
     "dask",
     "python-dateutil",
-    "spatial_image >=0.2.1",
+    "spatial_image >=1.2.1",
+    "xarray-dataclasses >=1.9.1",
     "xarray >=2024.10.0",
     "zarr",
 ]
@@ -46,14 +47,11 @@ Issues = "https://github.com/spatial-image/multiscale-spatial-image"
 
 [project.optional-dependencies]
 test = [
-    "itk-filtering >=5.3.0",
-    "dask_image",
     "jsonschema",
     "pooch",
     "pytest",
     "pytest-mypy",
     "fsspec",
-    "ipfsspec",
     "urllib3",
     "nbmake",
 ]
@@ -67,7 +65,11 @@ dask-image = [
 imagej = [
   "pyimagej",
 ]
-notebooks = ["matplotlib >=3.9.2,<4", "ome-types >=0.5.1.post1,<0.6", "tqdm >=4.66.4,<5"]
+notebooks = [
+  "matplotlib >=3.9.2,<4",
+  "ome-types >=0.5.1.post1,<0.6",
+  "tqdm >=4.66.4,<5"
+]
 
 [tool.black]
 line-length = 88
