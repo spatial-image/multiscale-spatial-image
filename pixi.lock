@@ -4291,14 +4291,14 @@ packages:
 - pypi: .
   name: multiscale-spatial-image
   version: 2.0.2
-  sha256: e262acd1f1448d59b8d800a73de15fc341a34ea50bb2be581f6f46c9eb4fb447
+  sha256: 76d90438e0728b2a78e238f49f2a2f80176b2e67c9020e6b35791df09111e902
   requires_dist:
   - dask
   - numpy
   - python-dateutil
   - spatial-image>=1.2.1
   - xarray-dataclasses>=1.9.1
-  - xarray>=2024.10.0
+  - xarray>=2024.11.0
   - zarr
   - dask-image ; extra == 'dask-image'
   - pyimagej ; extra == 'imagej'

@@ -37,7 +37,7 @@ dependencies = [
     "python-dateutil",
     "spatial_image >=1.2.1",
     "xarray-dataclasses >=1.9.1",
-    "xarray >=2024.10.0",
+    "xarray >=2025.1.2",
     "zarr",
 ]
 
