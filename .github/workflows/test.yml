@@ -20,7 +20,7 @@ jobs:
       - name: Install dependencies
         run: |
           python -m pip install --upgrade pip
-          python -m pip install -e ".[test]"
+          python -m pip install -e ".[test,itk,dask-image]"
       - name: Test with pytest
         run: |
           pytest --junitxml=junit/test-results.xml
