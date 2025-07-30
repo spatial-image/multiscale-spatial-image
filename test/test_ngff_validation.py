@@ -32,7 +32,7 @@ def check_valid_ngff(multiscale: DataTree):
     store = zarr.storage.MemoryStore()
     assert isinstance(multiscale.msi, MultiscaleSpatialImage)
     multiscale.msi.to_zarr(store, compute=True)
-    zarr.convenience.consolidate_metadata(store)
+    zarr.consolidate_metadata(store)
     metadata = json.loads(store.get(".zmetadata"))["metadata"]
     ngff = metadata[".zattrs"]
 
