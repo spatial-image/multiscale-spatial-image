@@ -35,9 +35,9 @@ dependencies = [
     "numpy",
     "dask",
     "python-dateutil",
-    "spatial_image >=1.2.1",
+    "spatial_image >=1.2.2",
     "xarray >=2025.1.2",
-    "xarray-dataclass >=2.0.0",
+    "xarray-dataclass >=3.0.0",
     "zarr",
 ]
 
