@@ -32,9 +32,34 @@ def check_valid_ngff(multiscale: DataTree):
     store = zarr.storage.MemoryStore()
     assert isinstance(multiscale.msi, MultiscaleSpatialImage)
     multiscale.msi.to_zarr(store, compute=True)
-    zarr.consolidate_metadata(store)
-    metadata = json.loads(store.get(".zmetadata"))["metadata"]
-    ngff = metadata[".zattrs"]
+
+    # Handle consolidate_metadata for both zarr v2 and v3
+    try:
+        # Zarr v3
+        zarr.consolidate_metadata(store)
+    except AttributeError:
+        # Zarr v2
+        zarr.convenience.consolidate_metadata(store)
+
+    # Get metadata - handle both v2 and v3 formats
+    try:
+        # Try zarr v2 format first
+        metadata = json.loads(store.get(".zmetadata"))["metadata"]
+        ngff = metadata[".zattrs"]
+    except (KeyError, TypeError):
+        # Try zarr v3 format
+        # In v3, consolidated metadata might be stored differently
+        zarr_json = store.get("zarr.json")
+        if zarr_json:
+            root_attrs = json.loads(zarr_json).get("attributes", {})
+            ngff = root_attrs
+        else:
+            # Fallback: try to get attributes directly
+            attrs_bytes = store.get(".zattrs")
+            if attrs_bytes:
+                ngff = json.loads(attrs_bytes)
+            else:
+                raise ValueError("Could not find NGFF metadata in store")
 
     image_schema = load_schema(version="0.4", strict=False)
     # strict_image_schema = load_schema(version="0.4", strict=True)
