@@ -131,6 +131,9 @@ class MultiscaleSpatialImage:
         ngff_metadata = {"multiscales": multiscales, "multiscaleSpatialImageVersion": 1}
         self._dt.ds = self._dt.ds.assign_attrs(**ngff_metadata)
 
+        # Ensure zarr v2 format for NGFF v0.4
+        if "zarr_format" not in kwargs:
+            kwargs["zarr_format"] = 2
         self._dt.to_zarr(store, mode=mode, **kwargs)
 
     def transpose(self, *dims: Hashable) -> DataTree:
