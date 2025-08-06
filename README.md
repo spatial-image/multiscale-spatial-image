@@ -153,14 +153,6 @@ method and `assign_coords`, equivalent to `xr.Dataset` `assign_coords` method.
 Store as an Open Microscopy Environment-Next Generation File Format ([OME-NGFF])
 / [netCDF] [Zarr] store.
 
-It is highly recommended to use `dimension_separator='/'` in the construction of
-the Zarr stores.
-
-```python
-store = zarr.storage.DirectoryStore('multiscale.zarr', dimension_separator='/')
-multiscale.to_zarr(store)
-```
-
 **Note**: The API is under development, and it may change until 1.0.0 is
 released. We mean it :-).
 
