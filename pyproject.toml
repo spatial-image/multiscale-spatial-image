@@ -39,6 +39,7 @@ dependencies = [
     "xarray >=2025.1.2",
     "xarray-dataclass >=3.0.0",
     "zarr",
+    "ngff-zarr",
 ]
 
 [project.urls]
