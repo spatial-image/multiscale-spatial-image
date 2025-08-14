@@ -112,7 +112,7 @@ def to_multiscale(
     if "chunks" in current_input.encoding:
         del current_input.encoding["chunks"]
 
-    nngff_image = nz.to_ngff_image(
+    ngff_image = nz.to_ngff_image(
         current_input,
         dims=image.dims,
         name=image.name,
@@ -122,7 +122,7 @@ def to_multiscale(
         method = nz.Methods.DASK_IMAGE_GAUSSIAN
 
     multiscales = nz.to_multiscales(
-        nngff_image,
+        ngff_image,
         scale_factors=scale_factors,
         method=method,
         chunks=out_chunks,
