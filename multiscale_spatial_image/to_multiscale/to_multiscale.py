@@ -4,26 +4,9 @@ from enum import Enum
 from spatial_image import SpatialImage, to_spatial_image  # type: ignore
 import ngff_zarr as nz
 from xarray import DataTree
-
-from ._xarray import _downsample_xarray_coarsen
-from ._itk import (
-    _downsample_itk_bin_shrink,
-    _downsample_itk_gaussian,
-    _downsample_itk_label,
-)
-from ._dask_image import _downsample_dask_image
 from .._docs import inject_docs
 
-
-class Methods(Enum):
-    XARRAY_COARSEN = "xarray_coarsen"
-    ITK_BIN_SHRINK = "itk_bin_shrink"
-    ITK_GAUSSIAN = "itk_gaussian"
-    ITK_LABEL_GAUSSIAN = "itk_label_gaussian"
-    DASK_IMAGE_GAUSSIAN = "dask_image_gaussian"
-    DASK_IMAGE_MODE = "dask_image_mode"
-    DASK_IMAGE_NEAREST = "dask_image_nearest"
-
+from ngff_zarr import Methods
 
 @inject_docs(m=Methods)
 def to_multiscale(
@@ -56,10 +39,11 @@ def to_multiscale(
     method : multiscale_spatial_image.Methods, optional
         Method to reduce the input image. Available methods are the following:
 
-        - `{m.XARRAY_COARSEN.value!r}` - Use xarray coarsen to downsample the image.
-        - `{m.ITK_BIN_SHRINK.value!r}` - Use ITK BinShrinkImageFilter to downsample the image.
+        - `{m.ITK_BIN_SHRINK.value!r}` - Use ITK ShrinkImageFilter to downsample the image.
+        - `{m.ITKWASM_BIN_SHRINK.value!r}` - Use ITKWASM BinShrinkImageFilter to downsample the image.
         - `{m.ITK_GAUSSIAN.value!r}` - Use ITK GaussianImageFilter to downsample the image.
-        - `{m.ITK_LABEL_GAUSSIAN.value!r}` - Use ITK LabelGaussianImageFilter to downsample the image.
+        - `{m.ITKWASM_GAUSSIAN.value!r}` - Use ITK ShrinkImageFilter to downsample the image.
+        - `{m.ITKWASM_LABEL_IMAGE.value!r}` - Use ITK LabelGaussianImageFilter to downsample the image.
         - `{m.DASK_IMAGE_GAUSSIAN.value!r}` - Use dask-image gaussian_filter to downsample the image.
         - `{m.DASK_IMAGE_MODE.value!r}` - Use dask-image mode_filter to downsample the image.
         - `{m.DASK_IMAGE_NEAREST.value!r}` - Use dask-image zoom to downsample the image.
