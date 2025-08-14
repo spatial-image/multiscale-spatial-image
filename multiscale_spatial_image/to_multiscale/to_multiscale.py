@@ -118,6 +118,9 @@ def to_multiscale(
         name=image.name,
     )
 
+    if method is None:
+        method = nz.Methods.DASK_IMAGE_GAUSSIAN
+
     multiscales = nz.to_multiscales(
         nngff_image,
         scale_factors=scale_factors,
