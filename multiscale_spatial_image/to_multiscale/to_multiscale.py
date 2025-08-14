@@ -96,6 +96,9 @@ def to_multiscale(
     if "chunks" in current_input.encoding:
         del current_input.encoding["chunks"]
 
+    axes_names = {d: image[d].long_name for d in image.dims}
+    axes_units = {d: image[d].units for d in image.dims}
+
     ngff_image = nz.to_ngff_image(
         current_input,
         dims=image.dims,
@@ -114,7 +117,13 @@ def to_multiscale(
 
     data_objects = {}
     for factor, ds in enumerate(multiscales.images):
-        si = to_spatial_image(ds.data, dims=ds.dims, scale=ds.scale)
+        si = to_spatial_image(
+            ds.data,
+            dims=ds.dims,
+            scale=ds.scale,
+            axis_names=axes_names,
+            axis_units=axes_units
+            )
         data_objects[f"scale{factor}"] = si.to_dataset(name=image.name, promote_attrs=True)
 
     multiscale = DataTree.from_dict(data_objects)
