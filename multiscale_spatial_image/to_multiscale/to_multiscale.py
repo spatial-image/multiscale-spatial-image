@@ -105,7 +105,8 @@ def to_multiscale(
 
     spatial_dims = [d for d in image.dims if d in {"z", "y", "x"}]
     scale = {
-        d: image[d][1] - image[d][0] if len(image[d]) > 1 else 1.0 for d in spatial_dims 
+        d: float(image[d][1] - image[d][0]) if len(image[d]) > 1 else 1.0 for d in spatial_dims 
+    }
     translation = {
         d: float(image[d][0]) if len(image[d]) > 0 else 0.0 for d in spatial_dims
     }
