@@ -125,11 +125,11 @@ def to_multiscale(
     )
 
     data_objects = {}
-    for factor, ds in enumerate(multiscales.images):
+    for factor, img in enumerate(multiscales.images):
         si = to_spatial_image(
-            ds.data,
-            dims=ds.dims,
-            scale=ds.scale,
+            img.data,
+            dims=img.dims,
+            scale=img.scale,
             axis_names=axes_names,
             axis_units=axes_units
            translation=img.translation,
