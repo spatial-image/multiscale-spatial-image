@@ -102,6 +102,8 @@ def to_multiscale(
     spatial_dims = [d for d in image.dims if d in {"z", "y", "x"}]
     scale = {
         d: image[d][1] - image[d][0] if len(image[d]) > 1 else 1.0 for d in spatial_dims 
+    translation = {
+        d: float(image[d][0]) if len(image[d]) > 0 else 0.0 for d in spatial_dims
     }
 
     ngff_image = nz.to_ngff_image(
@@ -109,6 +111,7 @@ def to_multiscale(
         dims=image.dims,
         name=image.name,
         scale=scale,
+       translation=translation,
     )
 
     if method is None:
@@ -129,6 +132,7 @@ def to_multiscale(
             scale=ds.scale,
             axis_names=axes_names,
             axis_units=axes_units
+           translation=img.translation,
             )
         data_objects[f"scale{factor}"] = si.to_dataset(name=image.name, promote_attrs=True)
 
