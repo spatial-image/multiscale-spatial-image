@@ -96,13 +96,19 @@ def to_multiscale(
     if "chunks" in current_input.encoding:
         del current_input.encoding["chunks"]
 
+    # get metadata from the image
     axes_names = {d: image[d].long_name for d in image.dims}
     axes_units = {d: image[d].units for d in image.dims}
+    spatial_dims = [d for d in image.dims if d in {"z", "y", "x"}]
+    scale = {
+        d: image[d][1] - image[d][0] if len(image[d]) > 1 else 1.0 for d in spatial_dims 
+    }
 
     ngff_image = nz.to_ngff_image(
         current_input,
         dims=image.dims,
         name=image.name,
+        scale=scale,
     )
 
     if method is None:
