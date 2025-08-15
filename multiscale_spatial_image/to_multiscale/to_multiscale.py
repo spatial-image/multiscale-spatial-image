@@ -39,7 +39,7 @@ def to_multiscale(
     method : multiscale_spatial_image.Methods, optional
         Method to reduce the input image. Available methods are the following:
 
-        - `{m.ITK_BIN_SHRINK.value!r}` - Use ITK ShrinkImageFilter to downsample the image.
+        - `{m.ITK_BIN_SHRINK.value!r}` - Use ITK ShrinkImageFilter to downsample the image (DEFAULT).
         - `{m.ITKWASM_BIN_SHRINK.value!r}` - Use ITKWASM BinShrinkImageFilter to downsample the image.
         - `{m.ITK_GAUSSIAN.value!r}` - Use ITK GaussianImageFilter to downsample the image.
         - `{m.ITKWASM_GAUSSIAN.value!r}` - Use ITK ShrinkImageFilter to downsample the image.
@@ -106,7 +106,7 @@ def to_multiscale(
     )
 
     if method is None:
-        method = nz.Methods.DASK_IMAGE_GAUSSIAN
+        method = nz.Methods.ITK_BIN_SHRINK
 
     multiscales = nz.to_multiscales(
         ngff_image,
