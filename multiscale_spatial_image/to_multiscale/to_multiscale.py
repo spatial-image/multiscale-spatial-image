@@ -1,18 +1,38 @@
 from typing import Union, Sequence, Optional, Dict, Mapping, Any, Tuple
 from enum import Enum
+import warnings
 
 from spatial_image import SpatialImage, to_spatial_image  # type: ignore
 import ngff_zarr as nz
 from xarray import DataTree
 from .._docs import inject_docs
 
-from ngff_zarr import Methods
+from ngff_zarr import Methods as NZMethods
 
-@inject_docs(m=Methods)
+class Methods(Enum):
+    XARRAY_COARSEN = "xarray_coarsen"
+    ITK_BIN_SHRINK = "itk_bin_shrink"
+    ITK_GAUSSIAN = "itk_gaussian"
+    ITK_LABEL_GAUSSIAN = "itk_label_gaussian"
+    DASK_IMAGE_GAUSSIAN = "dask_image_gaussian"
+    DASK_IMAGE_MODE = "dask_image_mode"
+    DASK_IMAGE_NEAREST = "dask_image_nearest"
+
+MSI_METHOD_MAPPING = {
+    'xarray_coarsen': NZMethods.ITK_BIN_SHRINK,
+    'itk_bin_shrink': NZMethods.ITK_BIN_SHRINK,
+    'itk_gaussian': NZMethods.ITK_GAUSSIAN,
+    'itk_label_gaussian': NZMethods.ITKWASM_LABEL_IMAGE,
+    'dask_image_gaussian': NZMethods.DASK_IMAGE_GAUSSIAN,
+    'dask_image_mode': NZMethods.DASK_IMAGE_MODE,
+    'dask_image_nearest': NZMethods.DASK_IMAGE_NEAREST,
+}
+
+@inject_docs(m=NZMethods)
 def to_multiscale(
     image: SpatialImage,
     scale_factors: Sequence[Union[Dict[str, int], int]],
-    method: Optional[Methods] = None,
+    method: Optional[NZMethods] = None,
     chunks: Optional[
         Union[
             int,
@@ -121,6 +141,13 @@ def to_multiscale(
 
     if method is None:
         method = nz.Methods.ITK_BIN_SHRINK
+    else:
+        if method.value in MSI_METHOD_MAPPING:
+            warnings.warn(
+                f"Method {method.name} is deprecated, use {MSI_METHOD_MAPPING[method.value]} instead.",
+                DeprecationWarning,
+            )
+            method = MSI_METHOD_MAPPING[method.value]
 
     multiscales = nz.to_multiscales(
         ngff_image,
