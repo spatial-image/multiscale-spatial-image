@@ -163,7 +163,7 @@ def to_multiscale(
             dims=img.dims,
             scale=img.scale,
             axis_names=axes_names,
-            axis_units=axes_units
+            axis_units=axes_units,
            translation=img.translation,
             )
         data_objects[f"scale{factor}"] = si.to_dataset(name=image.name, promote_attrs=True)
