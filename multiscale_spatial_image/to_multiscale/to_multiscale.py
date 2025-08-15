@@ -97,8 +97,12 @@ def to_multiscale(
         del current_input.encoding["chunks"]
 
     # get metadata from the image
-    axes_names = {d: image[d].long_name for d in image.dims}
-    axes_units = {d: image[d].units for d in image.dims}
+    axes_names = {d: image[d].attrs.get('long_name', None) for d in image.dims}
+    axes_names = None if all(v == v for v in axes_names.values()) else axes_names
+
+    axes_units = {d: image[d].attrs.get('units', None) for d in image.dims}
+    axes_units = None if all(v == '' for v in axes_units.values()) else axes_units
+
     spatial_dims = [d for d in image.dims if d in {"z", "y", "x"}]
     scale = {
         d: image[d][1] - image[d][0] if len(image[d]) > 1 else 1.0 for d in spatial_dims 
