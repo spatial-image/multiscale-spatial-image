@@ -53,8 +53,10 @@ def to_multiscale(
 
     scale_factors : int per scale or dict of spatial dimension int's per scale
         Integer scale factors to apply uniformly across all spatial dimension or
-        along individual spatial dimensions.
-        Examples: [2, 2] or [{{'x': 2, 'y': 4 }}, {{'x': 5, 'y': 10}}]
+        along individual spatial dimensions. The scale factors need to be passed
+        in **ascending order**.
+        This will work: [2, 4] or [{{'x': 2, 'y': 4}}, {{x': 5, 'y': 10}}].
+        This will not work: [4, 2] or [{{'x': 5, 'y': 10}}, {{'x': 2, 'y': 4}}].
 
     method : multiscale_spatial_image.Methods, optional
         Method to reduce the input image. Available methods are the following:
