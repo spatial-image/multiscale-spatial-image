@@ -60,49 +60,46 @@ def test_label_gaussian_isotropic_scale_factors(input_images):  # noqa: F811
 def test_anisotropic_scale_factors(input_images):  # noqa: F811
     dataset_name = "cthead1"
     image = input_images[dataset_name]
-    scale_factors = [{"x": 2, "y": 4}, {"x": 1, "y": 2}]
+    scale_factors = [{"x": 1, "y": 2}, {"x": 2, "y": 4}]
     multiscale = to_multiscale(image, scale_factors, method=Methods.ITK_BIN_SHRINK)
-    baseline_name = ("x2y4_x1y2/ITK_BIN_SHRINK",)
+    baseline_name = ("x1y2_x2y4/ITK_BIN_SHRINK",)
     verify_against_baseline(dataset_name, baseline_name, multiscale)
 
     dataset_name = "small_head"
     image = input_images[dataset_name]
     scale_factors = [
-        {"x": 3, "y": 2, "z": 4},
         {"x": 2, "y": 2, "z": 2},
         {"x": 1, "y": 2, "z": 1},
+        {"x": 2, "y": 2, "z": 2},
     ]
     multiscale = to_multiscale(image, scale_factors, method=Methods.ITK_BIN_SHRINK)
-    baseline_name = "x3y2z4_x2y2z2_x1y2z1/ITK_BIN_SHRINK"
     verify_against_baseline(dataset_name, baseline_name, multiscale)
 
 
 def test_gaussian_anisotropic_scale_factors(input_images):  # noqa: F811
     dataset_name = "cthead1"
     image = input_images[dataset_name]
-    scale_factors = [{"x": 2, "y": 4}, {"x": 1, "y": 2}]
+    scale_factors = [{"x": 1, "y": 2}, {"x": 2, "y": 4}]
     multiscale = to_multiscale(image, scale_factors, method=Methods.ITK_GAUSSIAN)
-    baseline_name = "x2y4_x1y2/ITK_GAUSSIAN"
+    baseline_name = "x1y2_x2y4/ITK_GAUSSIAN"
     verify_against_baseline(dataset_name, baseline_name, multiscale)
 
     dataset_name = "small_head"
     image = input_images[dataset_name]
     scale_factors = [
-        {"x": 3, "y": 2, "z": 4},
-        {"x": 2, "y": 2, "z": 2},
         {"x": 1, "y": 2, "z": 1},
     ]
     multiscale = to_multiscale(image, scale_factors, method=Methods.ITK_GAUSSIAN)
-    baseline_name = "x3y2z4_x2y2z2_x1y2z1/ITK_GAUSSIAN"
+    baseline_name = "x1y2z1_x2y2z2_x3y2z4/ITK_GAUSSIAN"
     verify_against_baseline(dataset_name, baseline_name, multiscale)
 
 
 def test_label_gaussian_anisotropic_scale_factors(input_images):  # noqa: F811
     dataset_name = "2th_cthead1"
     image = input_images[dataset_name]
-    scale_factors = [{"x": 2, "y": 4}, {"x": 1, "y": 2}]
+    scale_factors = [{"x": 1, "y": 2}, {"x": 2, "y": 4}]
     multiscale = to_multiscale(image, scale_factors, method=Methods.ITK_LABEL_GAUSSIAN)
-    baseline_name = "x2y4_x1y2/ITK_LABEL_GAUSSIAN"
+    baseline_name = "x1y2_x2y4/ITK_LABEL_GAUSSIAN"
     verify_against_baseline(dataset_name, baseline_name, multiscale)
 
 
@@ -113,9 +110,9 @@ def test_from_itk(input_images):  # noqa: F811
     # Test 2D with ITK default metadata
     dataset_name = "cthead1"
     image = itk.image_from_xarray(input_images[dataset_name])
-    scale_factors = [4, 2]
+    scale_factors = [2, 4]
     multiscale = itk_image_to_multiscale(image, scale_factors)
-    baseline_name = "4_2/from_itk"
+    baseline_name = "2_4/from_itk"
     verify_against_baseline(dataset_name, baseline_name, multiscale)
 
     # Test 2D with nonunit metadata
@@ -128,7 +125,7 @@ def test_from_itk(input_images):  # noqa: F811
     name = "cthead1_nonunit_metadata"
     axis_units = {dim: "millimeters" for dim in ("x", "y", "z")}
 
-    scale_factors = [4, 2]
+    scale_factors = [2, 4]
     multiscale = itk_image_to_multiscale(
         image,
         scale_factors=scale_factors,
@@ -136,7 +133,7 @@ def test_from_itk(input_images):  # noqa: F811
         axis_units=axis_units,
         name=name,
     )
-    baseline_name = "4_2/from_itk_nonunit_metadata"
+    baseline_name = "2_4/from_itk_nonunit_metadata"
     verify_against_baseline(dataset_name, baseline_name, multiscale)
 
     # Expect error for 2D image with anatomical axes
@@ -153,9 +150,9 @@ def test_from_itk(input_images):  # noqa: F811
     # Test 3D with ITK default metadata
     dataset_name = "small_head"
     image = itk.image_from_xarray(input_images[dataset_name])
-    scale_factors = [4, 2]
+    scale_factors = [2, 4]
     multiscale = itk_image_to_multiscale(image, scale_factors)
-    baseline_name = "4_2/from_itk"
+    baseline_name = "2_4/from_itk"
     verify_against_baseline(dataset_name, baseline_name, multiscale)
 
     # Test 3D with additional metadata
@@ -168,7 +165,7 @@ def test_from_itk(input_images):  # noqa: F811
     name = "small_head_anatomical"
     axis_units = {dim: "millimeters" for dim in input_images[dataset_name].dims}
 
-    scale_factors = [4, 2]
+    scale_factors = [2, 4]
     multiscale = itk_image_to_multiscale(
         image,
         scale_factors=scale_factors,
@@ -176,5 +173,5 @@ def test_from_itk(input_images):  # noqa: F811
         axis_units=axis_units,
         name=name,
     )
-    baseline_name = "4_2/from_itk_anatomical"
+    baseline_name = "2_4/from_itk_anatomical"
     verify_against_baseline(dataset_name, baseline_name, multiscale)
