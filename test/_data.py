@@ -4,7 +4,7 @@ import pytest
 import pooch
 import xarray as xr
 
-test_data_ipfs_cid = "bafybeiaskr5fxg6rbcwlxl6ibzqhubdleacenrpbnymc6oblwoi7ceqzta"
+test_data_ipfs_cid = "bafybeifxcgi2m5yy4yg6swrezhcxkow3cssyp6aynu4birxtios6j2o4oe"
 test_data_sha256 = "507dd779cba007c46ea68a5fe8865cabd5d8a7e00816470faae9195d1f1c3cd1"
 
 
