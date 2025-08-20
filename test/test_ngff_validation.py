@@ -12,6 +12,7 @@ from multiscale_spatial_image import to_multiscale, MultiscaleSpatialImage
 from spatial_image import to_spatial_image
 import numpy as np
 import zarr
+import ngff_zarr as nz
 
 http = urllib3.PoolManager()
 
@@ -160,7 +161,7 @@ def test_z_y_x_valid_ngff():
 def test_z_y_x_c_valid_ngff():
     array = np.random.random((32, 32, 16, 3))
     image = to_spatial_image(array)
-    multiscale = to_multiscale(image, [2, 4])
+    multiscale = to_multiscale(image, [2, 4], method=nz.Methods.DASK_IMAGE_GAUSSIAN)
 
     check_valid_ngff(multiscale)
 
@@ -168,6 +169,6 @@ def test_z_y_x_c_valid_ngff():
 def test_t_z_y_x_c_valid_ngff():
     array = np.random.random((2, 32, 32, 16, 3))
     image = to_spatial_image(array)
-    multiscale = to_multiscale(image, [2, 4])
+    multiscale = to_multiscale(image, [2, 4], method=nz.Methods.DASK_IMAGE_GAUSSIAN)
 
     check_valid_ngff(multiscale)
