@@ -55,7 +55,7 @@ def to_multiscale(
         Integer scale factors to apply uniformly across all spatial dimension or
         along individual spatial dimensions. The scale factors need to be passed
         in **ascending order**.
-        This will work: [2, 4] or [{{'x': 2, 'y': 4}}, {{x': 5, 'y': 10}}].
+        This will work: [2, 4] or [{{'x': 2, 'y': 4}}, {{'x': 5, 'y': 10}}].
         This will not work: [4, 2] or [{{'x': 5, 'y': 10}}, {{'x': 2, 'y': 4}}].
 
     method : multiscale_spatial_image.Methods, optional
