@@ -120,7 +120,7 @@ def to_multiscale(
 
     # get metadata from the image
     axes_names = {d: image[d].attrs.get('long_name', None) for d in image.dims}
-    axes_names = None if all(v == v for v in axes_names.values()) else axes_names
+    axes_names = None if all(v is None for v in axes_names.values()) else axes_names
 
     axes_units = {d: image[d].attrs.get('units', None) for d in image.dims}
     axes_units = None if all(v == '' or v is None for v in axes_units.values()) else axes_units
