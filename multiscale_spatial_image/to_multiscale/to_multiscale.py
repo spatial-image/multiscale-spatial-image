@@ -144,7 +144,7 @@ def to_multiscale(
     if method is None:
         method = nz.Methods.ITK_BIN_SHRINK
     else:
-        if method.value in MSI_METHOD_MAPPING:
+        if isinstance(method, Enum) and method.value in MSI_METHOD_MAPPING:
             warnings.warn(
                 f"Method {method.name} is deprecated, use {MSI_METHOD_MAPPING[method.value]} instead.",
                 DeprecationWarning,
