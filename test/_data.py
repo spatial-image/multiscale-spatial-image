@@ -4,8 +4,8 @@ import pytest
 import pooch
 import xarray as xr
 
-test_data_ipfs_cid = "bafybeiaeaj4wjvbmesdgj4vbc4cl3wy3zij6kwcij6jcolvfwe5ztq5s2u"
-test_data_sha256 = "6fc1599896b482696b02dd799977e407fa6cd2dbc37768762fce683595e4d6da"
+test_data_ipfs_cid = "Qmf7b98rtksedJ1byKff1yKZ2g4HHLRu8BjhpQPbns5Bkg"
+test_data_sha256 = "9218639e3a775c4a484d73d15db27017cf737db3cd8116527f7a8036558bfdcd"
 
 
 test_dir = Path(__file__).resolve().parent
