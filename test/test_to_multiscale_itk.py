@@ -62,7 +62,7 @@ def test_anisotropic_scale_factors(input_images):  # noqa: F811
     image = input_images[dataset_name]
     scale_factors = [{"x": 1, "y": 2}, {"x": 2, "y": 4}]
     multiscale = to_multiscale(image, scale_factors, method=Methods.ITK_BIN_SHRINK)
-    baseline_name = ("x1y2_x2y4/ITK_BIN_SHRINK",)
+    baseline_name = "x1y2_x2y4/ITK_BIN_SHRINK"
     verify_against_baseline(dataset_name, baseline_name, multiscale)
 
     dataset_name = "small_head"
