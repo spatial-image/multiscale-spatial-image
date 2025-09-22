@@ -6,6 +6,7 @@ import xarray as xr
 
 test_data_ipfs_cid = "bafybeibohlta4lanpvogwgbfqr5ietyycvakxzzay4to2wu6xyaobzikoq"
 test_data_sha256 = "9218639e3a775c4a484d73d15db27017cf737db3cd8116527f7a8036558bfdcd"
+gateway = "violet-chemical-catfish-899.mypinata.cloud"
 
 
 test_dir = Path(__file__).resolve().parent
@@ -13,7 +14,7 @@ extract_dir = "data"
 test_data_dir = test_dir / extract_dir
 test_data = pooch.create(
     path=test_dir,
-    base_url=f"https://violet-chemical-catfish-899.mypinata.cloud/ipfs/{test_data_ipfs_cid}/",
+    base_url=f"{gateway}/ipfs/{test_data_ipfs_cid}/",
     # base_url="https://github.com/spatial-image/multiscale-spatial-image/releases/download/v2.0.0/",
     registry={
         "data.tar.gz": f"sha256:{test_data_sha256}",
