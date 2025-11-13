@@ -11,6 +11,7 @@ examples/dask-worker-space/
 .pixi/
 examples/Cell_Colony.zarr/
 .idea/
+_version.py
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
