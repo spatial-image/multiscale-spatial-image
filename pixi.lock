@@ -5084,7 +5084,7 @@ packages:
 - pypi: ./
   name: multiscale-spatial-image
   version: 2.0.3
-  sha256: 3ff3d3f5dc9aea43e3e8e37e5ba37bbc78115c7c1930a0bd4cbff630d50b6695
+  sha256: 749d4f349c5922882275a7b7c6b2e164cf78372d6e28128be93fb5ef11410a23
   requires_dist:
   - dask>=2025.11.0,<2026
   - ngff-zarr>=0.18.2,<0.19
