@@ -251,19 +251,9 @@ We use the standard [GitHub flow].
 
 This section is relevant only for maintainers.
 
-1. Pull `git`'s `main` branch.
-2. `pixi install -a`
-3. `pixi run pre-commit-install`
-4. `pixi run -e test test`
-5. `pixi shell`
-6. `hatch version <new-version>`
-7. `git add .`
-8. `git commit -m "ENH: Bump version to <version>"`
-9. `hatch build`
-10. `hatch publish`
-11. `git push upstream main`
-12. Create a new tag and Release via the GitHub UI. Auto-generate release notes
-    and add additional notes as needed.
+Create a new tag and Release via the GitHub UI. Auto-generate release notes and
+add additional notes as needed. The version number is automatically updated via
+[hatch-vcs](https://hatch.pypa.io/latest/plugins/build/hooks/vcs/).
 
 [spatial-image]: https://github.com/spatial-image/spatial-image
 [Xarray]: https://xarray.pydata.org/en/stable/
