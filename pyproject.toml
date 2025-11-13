@@ -14,7 +14,6 @@ classifiers = [
     'Intended Audience :: Developers',
     'Intended Audience :: Science/Research',
     'Programming Language :: Python :: 3',
-    'Programming Language :: Python :: 3.10',
     'Programming Language :: Python :: 3.11',
     'Programming Language :: Python :: 3.12',
     'Programming Language :: Python :: 3.13',
@@ -30,17 +29,17 @@ keywords = [
 ]
 dynamic = ["version"]
 
-requires-python = ">=3.10"
+requires-python = ">=3.11"
 dependencies = [
-    "numpy",
-    "dask",
+    "numpy>=2.2.6,<3",
+    "dask>=2025.11.0,<2026",
     "python-dateutil",
-    "spatial_image >=1.2.2",
-    "xarray >=2025.1.2",
-    "xarray-dataclass >=3.0.0",
-    "zarr",
-    "ngff-zarr",
-]
+    "spatial-image>=1.2.3,<2",
+    "xarray>=2025.6.1,<2026",
+    "xarray-dataclass>=3.0.0,<4",
+    "zarr>=2.18.3,<3",
+    "ngff-zarr>=0.18.2,<0.19"
+    ]
 
 [project.urls]
 Home = "https://github.com/spatial-image/multiscale-spatial-image"
@@ -99,14 +98,14 @@ lint = { features = ["lint"], no-default-feature = true, solve-group = "default"
 test = { cmd = "pytest", description = "Run the test suite" }
 
 [tool.pixi.feature.test.dependencies]
-python = "3.10.*"
+python = "3.11.*"
 
 [tool.pixi.feature.notebooks.dependencies]
-openjdk = "8.*"
-maven = ">=3.9.8,<3.10"
-jupyterlab = ">=4.2.4,<4.3"
-python = "3.10.*"
-jpype1 = ">=1.4.0,<1.5.0"
+openjdk = ">=25.0.1,<26"
+maven = ">=3.9.11,<4"
+jupyterlab = ">=4.4.10,<5"
+python = "3.11.*"
+jpype1 = ">=1.6.0,<2"
 
 [tool.pixi.feature.notebooks.tasks]
 init-imagej = { cmd = "python -c \"import imagej; ij = imagej.init('2.15.0'); print(ij.getVersion())\"", description = "Initialize the python imagej installation" }
@@ -114,14 +113,14 @@ test-notebooks = { cmd = "pytest --nbmake --nbmake-timeout=3000 examples/Convert
 dev-notebooks = { cmd = "jupyter lab examples", description = "Start Jupyter Lab" }
 
 [tool.pixi.feature.data.dependencies]
-python = ">=3.10.0,<4"
+python = ">=3.11.0,<4"
 pooch = ">=1.8.2,<2"
 
 [tool.pixi.feature.data.tasks]
 hash-data = { cmd = "tar cvf ../data.tar * && gzip -9 -f ../data.tar && echo 'New SHA256:' && python3 -c 'import pooch; print(pooch.file_hash(\"../data.tar.gz\"))'", cwd = "test/data", description = "Update the testing data tarball and get its sha256 hash" }
 
 [tool.pixi.feature.lint.dependencies]
-pre-commit = "*"
+pre-commit = ">=4.4.0,<5"
 
 [tool.pixi.feature.lint.tasks]
 pre-commit-install = { cmd = "pre-commit install", description = "Install pre-commit hooks" }
