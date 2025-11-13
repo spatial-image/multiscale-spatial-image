@@ -1,5 +1,5 @@
 [build-system]
-requires = ["hatchling"]
+requires = ["hatchling", "hatch-vcs"]
 build-backend = "hatchling.build"
 
 [project]
@@ -76,7 +76,10 @@ notebooks = [
 line-length = 88
 
 [tool.hatch.version]
-path = "multiscale_spatial_image/__about__.py"
+source = "vcs"
+
+[tool.hatch.build.hooks.vcs]
+version-file = "multiscale_spatial_image/_version.py"
 
 [tool.pixi.workspace]
 channels = ["conda-forge"]
